@@ -35,7 +35,6 @@ class DbProduct(Base):
     date = Column(DATETIME)
     condition = Column(Enum)
     state = Column(Enum)
-    # user = relationship('DbUser', back_populates='items')
 
 class DbBid(Base):
     __tablename__ = 'bids'
