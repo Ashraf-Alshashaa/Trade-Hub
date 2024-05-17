@@ -36,7 +36,7 @@ class ProductDisplay(BaseModel):
     condition: ConditionEnum
     state: StateEnum
 
-    class Config():
+    class Config:
         orm_mode = True
         arbitrary_types_allowed = True
 
