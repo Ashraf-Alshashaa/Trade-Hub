@@ -27,17 +27,17 @@ class ProductBase(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    class ProductDisplay(BaseModel):
-        name: str
-        image: str
-        description: str
-        price: float
-        date: DateTime
-        condition: ConditionEnum
-        state: StateEnum
+class ProductDisplay(BaseModel):
+    name: str
+    image: str
+    description: str
+    price: float
+    date: DateTime
+    condition: ConditionEnum
+    state: StateEnum
 
-        class Config():
-            orm_mode = True
-            arbitrary_types_allowed = True
+    class Config():
+        orm_mode = True
+        arbitrary_types_allowed = True
 
 
