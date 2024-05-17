@@ -31,7 +31,6 @@ class ProductBase(BaseModel):
 
 class ProductDisplay(BaseModel):
     name: str
-    image: str
     description: str
     price: float
     date: str
@@ -39,7 +38,6 @@ class ProductDisplay(BaseModel):
     state : str
     # condition: ConditionEnum
     # state: StateEnum
-
-    class Config:
+    class Config():
         orm_mode = True
         # arbitrary_types_allowed = True
