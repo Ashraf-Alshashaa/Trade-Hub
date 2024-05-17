@@ -1,7 +1,7 @@
 from . import *
 
 
-def create_user(db: Session, request: ProductBase):
+def add_item(db: Session, request: ProductBase):
     new_item = DbProduct(
                     name=request.name,
                     image=request.image,
@@ -16,7 +16,7 @@ def create_user(db: Session, request: ProductBase):
     db.refresh(new_item)
     return new_item
 
-
+# Needs reconsidaration - All items based on their state
 def get_all_items(db: Session):
     return db.query(DbProduct).all()
 
