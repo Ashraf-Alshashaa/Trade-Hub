@@ -28,7 +28,7 @@ class DbProduct(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     image=Column(String)
-    decription = Column(String)
+    description = Column(String)
     seller_id = Column(Integer, ForeignKey('users.id'))
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
