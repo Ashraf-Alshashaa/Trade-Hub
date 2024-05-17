@@ -1,4 +1,5 @@
 from . import *
+from controllers.products import get_product_controller
 
 router = APIRouter(
   prefix='/products',
@@ -7,6 +8,4 @@ router = APIRouter(
 
 @router.get('/{id}')
 def get_product(id: int):
-  return {
-    'data':  id
-  }
+    return get_product_controller(id)
