@@ -23,3 +23,15 @@ class Product(BaseModel):
     condition: ConditionEnum
     state: StateEnum
 
+
+class ProductDisplay(BaseModel):
+    name: str
+    image: str
+    description: str
+    price: float
+    date: DateTime
+    condition: ConditionEnum
+    state: StateEnum
+    class Config():
+        orm_mode = True
+        arbitrary_types_allowed = True
