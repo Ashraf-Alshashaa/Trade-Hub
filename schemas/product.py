@@ -20,12 +20,14 @@ class ProductBase(BaseModel):
     seller_id: int
     price: float
     date: str
-    condition: ConditionEnum
-    state: StateEnum
+    condition: str
+    state: str
+    # condition: ConditionEnum
+    # state: StateEnum
 
 #Need to add this to the model since Pydentice cannot handle working with complex types such as Datetime
-    class Config:
-        arbitrary_types_allowed = True
+    # class Config:
+    #     arbitrary_types_allowed = True
 
 class ProductDisplay(BaseModel):
     name: str
@@ -33,9 +35,11 @@ class ProductDisplay(BaseModel):
     description: str
     price: float
     date: str
-    condition: ConditionEnum
-    state: StateEnum
+    condition : str
+    state : str
+    # condition: ConditionEnum
+    # state: StateEnum
 
     class Config:
         orm_mode = True
-        arbitrary_types_allowed = True
+        # arbitrary_types_allowed = True

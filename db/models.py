@@ -1,6 +1,6 @@
 from db.database import Base
 from sqlalchemy import Column
-from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
+from sqlalchemy.sql.sqltypes import Integer, String, Float, DATETIME, Enum
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -12,7 +12,6 @@ class DbUser(Base):
     email=Column(String)
     password=Column(String)
     address_id = Column(Integer)
-    address = relationship("DbAddress", back_populates="user")
 
 class DbAddress(Base):
     __tablename__ = 'addresses'
@@ -23,7 +22,6 @@ class DbAddress(Base):
     postcode = Column(String)
     house_number = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("DbUser", back_populates="address")
 
 class DbProduct(Base):
     __tablename__ = 'products'
@@ -34,9 +32,12 @@ class DbProduct(Base):
     seller_id = Column(Integer, ForeignKey('users.id'))
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
-    date = Column(DateTime)
-    condition = Column(Enum)
-    state = Column(Enum)
+    date = Column(String)
+    condition = Column(String)
+    state = Column(String)
+    # date = Column(DATETIME)
+    # condition = Column(Enum)
+    # state = Column(Enum)
 
 class DbBid(Base):
     __tablename__ = 'bids'
