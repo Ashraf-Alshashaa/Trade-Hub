@@ -32,9 +32,12 @@ class DbProduct(Base):
     seller_id = Column(Integer, ForeignKey('users.id'))
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
-    date = Column(DATETIME)
-    condition = Column(Enum)
-    state = Column(Enum)
+    date = Column(String)
+    condition = Column(String)
+    state = Column(String)
+    # date = Column(DATETIME)
+    # condition = Column(Enum)
+    # state = Column(Enum)
 
 class DbBid(Base):
     __tablename__ = 'bids'
