@@ -1,6 +1,7 @@
 from db.database import Base
 from sqlalchemy import Column
-from sqlalchemy.sql.sqltypes import Integer, String, Float, DATETIME, Enum
+from sqlalchemy.sql.sqltypes import Integer, String, Float, Enum, DateTime
+from datetime import datetime
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -32,12 +33,10 @@ class DbProduct(Base):
     seller_id = Column(Integer, ForeignKey('users.id'))
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
+    # datetime requires a certain configuration which stops testing the other properties, therefore for now I changed it to str
     date = Column(String)
-    condition = Column(String)
-    state = Column(String)
-    # date = Column(DATETIME)
-    # condition = Column(Enum)
-    # state = Column(Enum)
+    condition = Column(Enum)
+    state = Column(Enum)
 
 class DbBid(Base):
     __tablename__ = 'bids'
