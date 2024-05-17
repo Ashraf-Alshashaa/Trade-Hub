@@ -19,7 +19,7 @@ class Product(BaseModel):
     description: str
     seller_id: int
     price: float
-    date: datetime
+    date: DateTime
     condition: ConditionEnum
     state: StateEnum
 
