@@ -12,6 +12,7 @@ class DbUser(Base):
     email=Column(String)
     password=Column(String)
     address_id = Column(Integer)
+    address = relationship("DbAddress", back_populates="user")
 
 class DbAddress(Base):
     __tablename__ = 'addresses'
@@ -22,6 +23,7 @@ class DbAddress(Base):
     postcode = Column(String)
     house_number = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("DbUser", back_populates="address")
 
 class DbProduct(Base):
     __tablename__ = 'products'
