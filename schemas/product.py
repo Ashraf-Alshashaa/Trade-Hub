@@ -13,7 +13,7 @@ class StateEnum(str, Enum):
     pending = "pending"
 
 
-class Product(BaseModel):
+class ProductBase(BaseModel):
     name: str
     image: str
     description: str
