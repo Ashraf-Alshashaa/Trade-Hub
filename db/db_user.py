@@ -1,9 +1,7 @@
 from . import *
-from auth.hash import Hash
-from schemas.users import UserBase
 
 def register_user(db: Session, request: UserBase):
-    new_user= DbUser(
+    new_user = DbUser(
         username = request.username,
         email = request.email,
         password = Hash.bcrypt(request.password)
