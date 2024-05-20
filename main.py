@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from db.database import engine
 from db import models
-from routers import bidding 
+from routers import bid 
 
 app = FastAPI()
-app.include_router(bidding.router)
+app.include_router(bid.router)
 
 @app.get('/')
 def index():
