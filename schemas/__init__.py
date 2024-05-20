@@ -1,3 +1,3 @@
 from pydantic import BaseModel
-from sqlalchemy.sql.sqltypes import DateTime
+from datetime import datetime
 from enum import Enum
