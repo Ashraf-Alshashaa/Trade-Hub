@@ -35,8 +35,7 @@ class DbProduct(Base):
     seller_id = Column(Integer, ForeignKey('users.id'))
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
-    # datetime requires a certain configuration which stops testing the other properties, therefore for now I changed it to str
-    date = Column(String)
+    date = Column(DateTime)
     condition = Column(Enum)
     state = Column(Enum)
 
