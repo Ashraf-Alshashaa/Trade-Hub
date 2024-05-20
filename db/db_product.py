@@ -27,6 +27,8 @@ def get_item(db: Session, id: int):
 
 def modify_item(db: Session, id: int, request: ProductBase):
     item = db.query(DbProduct).filter(DbProduct.id == id)
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Product not found")
     item.update({
                 DbProduct.name: request.name,
                 DbProduct.image: request.image,
@@ -40,9 +42,11 @@ def modify_item(db: Session, id: int, request: ProductBase):
     db.commit()
     return 'ok'
 
-#will come back to handle exceptions
+
 def delete_item(db: Session, id: int):
     item = db.query(DbProduct).filter(DbProduct.id==id).first()
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Product not found")
     db.delete(item)
     db.commit()
     return 'ok'
