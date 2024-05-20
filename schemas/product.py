@@ -1,16 +1,19 @@
 from . import *
 
 
+EXPECTED_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
 class ConditionEnum(str, Enum):
-    new = "new"
-    used = "used"
-    refurbished = "good as new"
+    NEW = "new"
+    USED = "used"
+    REFURBISHED = "good as new"
 
 
 class StateEnum(str, Enum):
-    available = "available"
-    sold = "sold"
-    pending = "pending"
+    AVAILABLE = "available"
+    SOLD = "sold"
+    PENDING = "pending"
 
 
 class ProductBase(BaseModel):
@@ -18,24 +21,21 @@ class ProductBase(BaseModel):
     image: str
     description: str
     seller_id: int
+    buyer_id: Optional[int]
     price: float
-    # datetime requires a certain configuration which stops testing the other properties, therefore for now I changed it to str
-    date: str
+    date: datetime
     condition: ConditionEnum
     state: StateEnum
 
-#Need to add this to the model since Pydentice cannot handle working with complex types such as Datetime
-    # class Config:
-    #     arbitrary_types_allowed = True
 
 class ProductDisplay(BaseModel):
     name: str
+    image: str
     description: str
     price: float
-    # datetime requires a certain configuration which stops testing the other properties, therefore for now I changed it to str
-    date: str
+    date: datetime
     condition: ConditionEnum
     state: StateEnum
+
     class Config():
         orm_mode = True
-        # arbitrary_types_allowed = True

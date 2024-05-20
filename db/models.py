@@ -1,7 +1,7 @@
+from . import *
 from db.database import Base
 from sqlalchemy import Column
 from sqlalchemy.sql.sqltypes import Integer, String, Float, Enum, DateTime
-from datetime import datetime
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -36,12 +36,13 @@ class DbProduct(Base):
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
     date = Column(DateTime)
-    condition = Column(Enum)
-    state = Column(Enum)
+    condition = Column(Enum(ConditionEnum))
+    state = Column(Enum(StateEnum))
+
 
 class DbBid(Base):
     __tablename__ = 'bids'
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey('products.id'))
-    price=Column(Float)
+    price = Column(Float)
     bidder_id = Column(Integer, ForeignKey('users.id'))
