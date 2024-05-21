@@ -1,5 +1,6 @@
 from . import *
 from dotenv import dotenv_values
+from db import db_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 config = dotenv_values(".env")

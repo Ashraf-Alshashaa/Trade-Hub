@@ -7,4 +7,3 @@ from jose import jwt, JWTError
 from db.database import get_db
 from db import models
 from auth import oauth2
-from db import db_user
