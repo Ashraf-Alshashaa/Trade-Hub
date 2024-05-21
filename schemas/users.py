@@ -5,7 +5,6 @@ class UserBase(BaseModel):
     username: str
     email: str
     password: str
-    address_id: Optional[int] = None
 
 
 class UserDisplay(BaseModel):
