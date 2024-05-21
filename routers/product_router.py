@@ -11,10 +11,10 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 
 @router.post('/add', response_model=ProductDisplay)
-def add_item(request: ProductBase, db: Session = Depends(get_db)):
-    return db_product.add_item(db, request)
+def add_product(request: ProductBase, db: Session = Depends(get_db)):
+    return db_product.add_product(db, request)
 
 
 @router.put('/modify/{id}', response_model=ProductDisplay)
-def modify_item(id: int, request: ProductBase, db: Session = Depends(get_db)):
-    return db_product.modify_item(db, id, request)
+def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db)):
+    return db_product.modify_product(db, id, request)
