@@ -1,19 +1,20 @@
 from . import *
 from db.database import Base
 from sqlalchemy import Column
-from sqlalchemy.sql.sqltypes import Integer, String, Float, Enum, DateTime
+from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
 
 class DbUser(Base):
-    __tablename__='users'
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    username=Column(String)
-    email=Column(String)
-    password=Column(String)
+    username = Column(String)
+    email = Column(String)
+    password = Column(String)
     address_id = Column(Integer)
     address = relationship("DbAddress", back_populates="user")
+
 
 class DbAddress(Base):
     __tablename__ = 'addresses'
@@ -25,6 +26,7 @@ class DbAddress(Base):
     house_number = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("DbUser", back_populates="address")
+
 
 class DbProduct(Base):
     __tablename__ = 'products'
@@ -38,6 +40,7 @@ class DbProduct(Base):
     date = Column(DateTime)
     condition = Column(Enum(ConditionEnum))
     state = Column(Enum(StateEnum))
+
 
 
 class DbBid(Base):
