@@ -1,14 +1,9 @@
 from . import *
 from db.database import Base
 from sqlalchemy import Column
-
-
-
 from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
 from sqlalchemy.sql.schema import ForeignKey
-
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.schema import ForeignKey
 
 
 class DbUser(Base):
@@ -38,18 +33,19 @@ class DbProduct(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     image=Column(String)
-    decription = Column(String)
+    description = Column(String)
     seller_id = Column(Integer, ForeignKey('users.id'))
     buyer_id = Column(Integer, ForeignKey('users.id'))
     price = Column(Float)
     date = Column(DateTime)
-    condition = Column(Enum)
-    state = Column(Enum)
+    condition = Column(Enum(ConditionEnum))
+    state = Column(Enum(StateEnum))
+
 
 
 class DbBid(Base):
     __tablename__ = 'bids'
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey('products.id'))
-    price=Column(Float)
+    price = Column(Float)
     bidder_id = Column(Integer, ForeignKey('users.id'))
