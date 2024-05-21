@@ -6,6 +6,8 @@ def add_bid(db: Session, request: BidBase):
     new_bid = DbBid(
         product_id = request.product_id,
         price = request.price,
+        status = request.status.value,
+        date = request.date,
         bidder_id = request.bidder_id
     )
     db.add(new_bid)

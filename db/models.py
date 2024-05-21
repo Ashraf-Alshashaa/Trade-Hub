@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
+from schemas.bid import BidStatus
 
 
 class DbUser(Base):
@@ -45,6 +46,8 @@ class DbProduct(Base):
 class DbBid(Base):
     __tablename__ = 'bids'
     id = Column(Integer, primary_key=True, index=True)
+    date = Column(DateTime)
+    status = Column(Enum(BidStatus))
     product_id = Column(Integer, ForeignKey('products.id'))
     price = Column(Float)
     bidder_id = Column(Integer, ForeignKey('users.id'))
