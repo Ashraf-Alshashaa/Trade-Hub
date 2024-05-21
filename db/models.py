@@ -12,7 +12,6 @@ class DbUser(Base):
     username = Column(String)
     email = Column(String)
     password = Column(String)
-    address_id = Column(Integer)
     address = relationship("DbAddress", back_populates="user")
 
 
