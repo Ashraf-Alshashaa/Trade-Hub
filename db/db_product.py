@@ -22,7 +22,7 @@ def get_all_items(db: Session):
     return db.query(DbProduct).all()
 
 
-def get_item(db: Session, id: int):
+def get_product(db: Session, id: int):
     return db.query(DbProduct).filter(DbProduct.id == id).first()
 
 
