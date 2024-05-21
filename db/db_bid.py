@@ -4,6 +4,8 @@ from db.models import DbBid
 
 def add_bid(db: Session, request: BidBase):
     new_bid = DbBid(
+        status=request.status.value,
+        date=request.date,
         product_id=request.product_id,
         price=request.price,
         bidder_id=request.bidder_id
