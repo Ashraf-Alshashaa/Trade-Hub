@@ -1,15 +1,14 @@
 from fastapi import FastAPI
 from db.database import engine
 from db import models
-from routers import bid 
-from routers import user_router, product_router
+from routers import user_router, product_router, bid_router
 from auth import authentication
 
 
 app = FastAPI()
 
 
-app.include_router(bid.router)
+app.include_router(bid_router.router)
 app.include_router(product_router.router)
 app.include_router(authentication.router)
 app.include_router(user_router.router)
