@@ -1,10 +1,11 @@
 from . import *
+from dotenv import dotenv_values
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-SECRET_KEY = '8ca5db8afbada997c915c8f59e43988fc17f916459bec3fa1bcc4007fa3fbc45'
-ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+config = dotenv_values(".env")
+SECRET_KEY = config["SECRET_KEY"]
+ACCESS_TOKEN_EXPIRE_MINUTES = config['ACCESS_TOKEN_EXPIRE_MINUTES']
+ALGORITHM = config['ALGORITHM']
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -17,11 +18,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail='Could not validate credentials',
-        headers={'WWW-Authenticate':'Bearer'}
+        headers={'WWW-Authenticate': 'Bearer'}
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
