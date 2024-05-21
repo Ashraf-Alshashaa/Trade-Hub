@@ -1,25 +1,29 @@
 from . import *
 
 
+EXPECTED_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
 class ConditionEnum(str, Enum):
-    new = "new"
-    used = "used"
-    refurbished = "good as new"
+    NEW = "new"
+    USED = "used"
+    REFURBISHED = "good as new"
 
 
 class StateEnum(str, Enum):
-    available = "available"
-    sold = "sold"
-    pending = "pending"
+    AVAILABLE = "available"
+    SOLD = "sold"
+    PENDING = "pending"
 
 
-class Product(BaseModel):
+class ProductBase(BaseModel):
     name: str
     image: str
     description: str
     seller_id: int
+    buyer_id: Optional[int]
     price: float
-    date: DateTime
+    date: datetime
     condition: ConditionEnum
     state: StateEnum
 
@@ -29,9 +33,9 @@ class ProductDisplay(BaseModel):
     image: str
     description: str
     price: float
-    date: DateTime
+    date: datetime
     condition: ConditionEnum
     state: StateEnum
+
     class Config():
         orm_mode = True
-        arbitrary_types_allowed = True
