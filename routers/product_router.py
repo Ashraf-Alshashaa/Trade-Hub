@@ -1,6 +1,8 @@
 from . import *
-from db import db_product
+from db import db_product, db_bid
 from schemas.product import ProductDisplay
+from schemas.bid import BidDisplay
+from typing import List
 
 router = APIRouter(prefix='/product', tags=['product'])
 
@@ -18,3 +20,8 @@ def add_product(request: ProductBase, db: Session = Depends(get_db)):
 @router.put('/modify/{id}', response_model=ProductDisplay)
 def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db)):
     return db_product.modify_product(db, id, request)
+
+
+@router.get('/{id}/bids', response_model=List[BidDisplay])
+def get_all_bids(id: int, db: Session = Depends(get_db)):
+    return db_bid.get_all_bids(db, id)
