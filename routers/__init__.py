@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from db import db_product
 from schemas import product
 from schemas.product import ProductDisplay, ProductBase
