@@ -20,3 +20,8 @@ def add_product(request: ProductBase, db: Session = Depends(get_db)):
 def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db)):
     return db_product.modify_product(db, id, request)
 
+
+@router.delete('/delete/{id}', response_model=ProductDisplay)
+def delete_product(id: int, db: Session = Depends(get_db)):
+    return db_product.delete_product(db, id)
+
