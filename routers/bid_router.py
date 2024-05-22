@@ -14,5 +14,5 @@ def get_all_bids(id: int = Query(..., alias='product_id'), db: Session = Depends
     return db_bid.get_all_bids(db, id)
 
 @router.put('/status', response_model=BidDisplay)
-def change_bid_status(request: BidBase, bid_id: int,db: Session = Depends(get_db), id: int = Query(..., alias='product_id')):
+def change_bid_status(request: BidBase, bid_id: int,db: Session = Depends(get_db)):
     return db_bid.change_bidding_status(db, bid_id, request)
