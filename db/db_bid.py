@@ -17,3 +17,13 @@ def add_bid(db: Session, request: BidBase):
 
 def get_all_bids(db: Session, id: int):
     return db.query(DbBid).filter(DbBid.product_id == id).all()
+
+
+def delete_bid(db: Session, id: int):
+    bid = db.query(DbBid).filter(DbBid.id == id).first()
+    # handle any exceptions
+    if not bid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Bid with id {id} not found')
+    db.delete(bid)
+    db.commit()
+    return 'ok'
