@@ -45,9 +45,9 @@ def modify_product(db: Session, id: int, request: ProductBase):
 
 
 def delete_product(db: Session, id: int):
-    item = db.query(DbProduct).filter(DbProduct.id==id).first()
+    item = db.query(DbProduct).filter(DbProduct.id == id).first()
     if not item:
-        raise status.HTTPException(status_code=404, detail="Product not found")
+        raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     db.delete(item)
     db.commit()
     return 'ok'
