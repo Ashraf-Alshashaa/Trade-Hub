@@ -37,5 +37,5 @@ class ProductDisplay(BaseModel):
     condition: ConditionEnum
     state: StateEnum
 
-    class Config():
-        orm_mode = True
+    class Config:
+        from_attributes = True
