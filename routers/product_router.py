@@ -1,6 +1,6 @@
 from . import *
 from db import db_product
-from schemas.product import ProductDisplay
+from schemas.product import ProductDisplay, ProductBase
 
 
 router = APIRouter(prefix='/product', tags=['product'])

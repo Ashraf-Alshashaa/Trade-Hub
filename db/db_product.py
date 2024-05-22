@@ -1,4 +1,6 @@
 from . import *
+from schemas.product import ProductBase
+from db.models import DbProduct
 
 
 def add_product(db: Session, request: ProductBase):

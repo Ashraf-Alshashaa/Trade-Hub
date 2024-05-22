@@ -5,6 +5,7 @@ from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 from schemas.bid import BidStatus
+from schemas.product import StateEnum, ConditionEnum
 
 
 class DbUser(Base):
