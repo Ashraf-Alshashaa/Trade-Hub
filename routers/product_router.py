@@ -12,16 +12,16 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 
 @router.post('/add', response_model=ProductDisplay)
-def add_product(request: ProductBase, db: Session = Depends(get_db)):
+def add_product(request: ProductBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     return db_product.add_product(db, request)
 
 
 @router.put('/modify/{id}', response_model=ProductDisplay)
-def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db)):
+def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     return db_product.modify_product(db, id, request)
 
 
 @router.delete('/delete/{id}', response_model=ProductDisplay)
-def delete_product(id: int, db: Session = Depends(get_db)):
+def delete_product(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     return db_product.delete_product(db, id)
 
