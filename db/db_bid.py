@@ -17,6 +17,10 @@ def add_bid(db: Session, request: BidBase):
     return new_bid
 
 
+def get_bid(db: Session, id: int):
+    return db.query(DbBid).filter(DbBid.id == id).first()
+
+
 def get_all_bids(db: Session, id: int):
     return db.query(DbBid).filter(DbBid.product_id == id).all()
 
