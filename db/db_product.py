@@ -1,6 +1,7 @@
 from . import *
 from schemas.product import ProductBase
-from db.models import DbProduct
+from db.models import DbProduct, DbBid
+from schemas.bid import BidStatus
 from schemas.product import StateEnum
 
 
@@ -62,3 +63,16 @@ def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEn
 
 def get_products_by_seller(db: Session, seller_id: int) -> List[DbProduct]:
     return db.query(DbProduct).filter(DbProduct.seller_id == seller_id).all()
+
+
+def get_products_bought_by_user(db: Session, user_id: int) -> List[DbProduct]:
+    return db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
+
+
+def get_products_user_is_bidding_on(db: Session, user_id: int) -> List[DbProduct]:
+    pending_bids = db.query(DbBid).filter(
+            DbBid.bidder_id == user_id,
+            DbBid.status == BidStatus.PENDING
+    ).all()
+    product_ids = [bid.product_id for bid in pending_bids]
+    return db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()

@@ -28,7 +28,10 @@ def delete_product(id: int, db: Session = Depends(get_db)):
 
 
 @router.get('/{seller_id}/my_selling', response_model=List[ProductDisplay])
-def get_products_by_seller(seller_id: int, db: Session = Depends(get_db)):
+def get_products_by_seller(
+        seller_id: int,
+        db: Session = Depends(get_db)
+):
     return db_product.get_products_by_seller(db, seller_id)
 
 
@@ -39,3 +42,13 @@ def get_products_by_seller_and_state(
         db: Session = Depends(get_db)
 ):
     return db_product.get_products_by_seller_and_state(db, seller_id, state)
+
+
+@router.get('/{user_id}/my_buying/bought_before', response_model=List[ProductDisplay])
+def get_products_bought_by_user(user_id: int, db: Session = Depends(get_db)):
+    return db_product.get_products_bought_by_user(db, user_id)
+
+
+@router.get('/{user_id}/my_buying/my_biddings', response_model=List[ProductDisplay])
+def get_products_user_is_bidding_on(user_id: int, db: Session = Depends(get_db)):
+    return db_product.get_products_user_is_bidding_on(db, user_id)
