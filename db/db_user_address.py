@@ -12,15 +12,16 @@ def add_address(db: Session, request: AddressBase):
                     city=request.city,
                     country=request.country,
                     postcode=request.postcode,
+                    user_id = request.user_id
                     )
     db.add(new_address)
     db.commit()
-    db.refresh(new_address)
+    # db.refresh(new_address)
     return new_address
 
 
 def my_addresses(db: Session):
-    return db.query(DbAddress).all()
+    return db.query(DbAddress).filter(DbAddress.user_id == id).all()
 
 
 def get_address(db: Session, id: int):
@@ -37,6 +38,7 @@ def modify_address(db: Session, id: int, request: AddressBase):
                 DbAddress.city: request.city,
                 DbAddress.country: request.country,
                 DbAddress.postcode: request.postcode,
+                DbAddress.user_id: request.user_id
                 })
     db.commit()
     return address.first()

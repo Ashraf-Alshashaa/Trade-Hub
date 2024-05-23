@@ -7,6 +7,7 @@ class AddressBase(BaseModel):
     city: str
     country: str
     postcode: str
+    user_id : int
 
 
 class AddressPrivateDisplay(BaseModel):
@@ -15,6 +16,9 @@ class AddressPrivateDisplay(BaseModel):
     city: str
     country: str
     postcode: str
+
+    class Config:
+        orm_mode = True
 
 
 class AddressPublicDisplay(BaseModel):
