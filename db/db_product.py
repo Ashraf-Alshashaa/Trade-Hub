@@ -1,6 +1,7 @@
 from . import *
 from schemas.product import ProductBase
 from db.models import DbProduct
+from schemas.product import StateEnum
 
 
 def add_product(db: Session, request: ProductBase):
@@ -54,3 +55,10 @@ def delete_product(db: Session, id: int):
     db.commit()
     return 'ok'
 
+
+def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum) -> List[DbProduct]:
+    return db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
+
+
+def get_products_by_seller(db: Session, seller_id: int) -> List[DbProduct]:
+    return db.query(DbProduct).filter(DbProduct.seller_id == seller_id).all()

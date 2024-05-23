@@ -1,7 +1,8 @@
 from . import *
 from db import db_product
 from schemas.product import ProductDisplay, ProductBase
-
+from schemas.product import StateEnum
+from sqlalchemy.sql.sqltypes import List
 
 router = APIRouter(prefix='/product', tags=['product'])
 
@@ -25,3 +26,16 @@ def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db))
 def delete_product(id: int, db: Session = Depends(get_db)):
     return db_product.delete_product(db, id)
 
+
+@router.get('/{seller_id}/my_selling', response_model=List[ProductDisplay])
+def get_products_by_seller(seller_id: int, db: Session = Depends(get_db)):
+    return db_product.get_products_by_seller(db, seller_id)
+
+
+@router.get('/{seller_id}/my_selling/state', response_model=List[ProductDisplay])
+def get_products_by_seller_and_state(
+        seller_id: int,
+        state: StateEnum = Query(...),
+        db: Session = Depends(get_db)
+):
+    return db_product.get_products_by_seller_and_state(db, seller_id, state)
