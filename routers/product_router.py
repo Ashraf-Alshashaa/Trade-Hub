@@ -21,7 +21,7 @@ def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db),
     return db_product.modify_product(db, id, request)
 
 
-@router.delete('/delete/{id}', response_model=ProductDisplay)
+@router.delete('/delete/{id}')
 def delete_product(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     return db_product.delete_product(db, id)
 
