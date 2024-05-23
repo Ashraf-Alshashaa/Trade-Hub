@@ -43,7 +43,7 @@ def modify_product(db: Session, id: int, request: ProductBase):
                 DbProduct.condition: request.condition,
                 DbProduct.state: request.state})
     db.commit()
-    return item
+    return item.first()
 
 
 def delete_product(db: Session, id: int):
