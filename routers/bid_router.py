@@ -26,7 +26,7 @@ def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
 
 
-@router.put('/status')
+@router.put('/status', response_model=BidDisplay)
 def change_bid_status(request: BidBase, bid_id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Fetch the bid to verify authorization
     bid = db_bid.get_bid(db, bid_id)
