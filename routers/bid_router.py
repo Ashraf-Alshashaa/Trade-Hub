@@ -1,5 +1,7 @@
 from . import *
 from schemas.bid import BidDisplay, BidBase
+from sqlalchemy import join
+from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List
 
@@ -24,18 +26,18 @@ def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
 
 
-@router.put('/status', response_model=BidDisplay)
+@router.put('/status')
 def change_bid_status(request: BidBase, bid_id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Fetch the bid to verify authorization
     bid = db_bid.get_bid(db, bid_id)
     if not bid:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
-
-    # Check if the current user is the bidder
-    if bid.bidder_id != current_user.id:
+    product_id = db.query(DbBid).filter(DbBid.id == bid_id).first().product_id
+    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
+    # Check if the current user is the seller
+    if seller_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Not authorized to change the status of this bid")
-
     return db_bid.change_bidding_status(db, bid_id, request)
 
 
