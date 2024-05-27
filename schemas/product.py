@@ -39,3 +39,9 @@ class ProductDisplay(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ProductCardDisplay(ProductDisplay):
+    location: str
+    id: int
+    seller_id: int
