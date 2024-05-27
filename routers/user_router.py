@@ -13,7 +13,7 @@ def register_user(request: UserBase, db: Session = Depends(get_db)):
     return db_user.register_user(db, request)
 
 
-@router.get('/')
+@router.get('/',response_model=UserDisplay)
 def get_user(db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     id = current_user.id
     return db_user.get_user_by_id(db, id)

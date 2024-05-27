@@ -25,14 +25,9 @@ def my_addresses(id: int = Query(..., alias='user_id'),
     return db_user_address.my_addresses(db, id)
 
 
-# only shows the default address publicly
-@router.get('', response_model=AddressPublicDisplay)
-def show_address_publicly(db: Session = Depends(get_db)):
-    return db_user_address.get_default_address(db)
-
-
 @router.get('/{id}')
-def get_address_privately(id: int, db: Session = Depends(get_db)):
+def get_address_privately(id: int, db: Session = Depends(get_db),
+                          current_user: UserBase = Depends(get_current_user)):
     return db_user_address.get_address(db, id)
 
 
