@@ -8,7 +8,11 @@ router = APIRouter(prefix='/product', tags=['product'])
 
 
 @router.post('/add', response_model=ProductDisplay)
-def add_product(request: ProductBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def add_product(
+        request: ProductBase,
+        db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+):
     # Set the seller_id to the current user's id
     request.seller_id = current_user.id
     return db_product.add_product(db, request)
