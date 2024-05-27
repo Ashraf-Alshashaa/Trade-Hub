@@ -27,7 +27,7 @@ def delete_product(id: int, db: Session = Depends(get_db)):
     return db_product.delete_product(db, id)
 
 
-@router.get('/{seller_id}/my_selling', response_model=List[ProductDisplay])
+@router.get('/my-sales', response_model=List[ProductDisplay])
 def get_products_by_seller(
         seller_id: int,
         db: Session = Depends(get_db)
@@ -35,7 +35,7 @@ def get_products_by_seller(
     return db_product.get_products_by_seller(db, seller_id)
 
 
-@router.get('/{seller_id}/my_selling/state', response_model=List[ProductDisplay])
+@router.get('/my-sales/state', response_model=List[ProductDisplay])
 def get_products_by_seller_and_state(
         seller_id: int,
         state: StateEnum = Query(...),
@@ -44,11 +44,11 @@ def get_products_by_seller_and_state(
     return db_product.get_products_by_seller_and_state(db, seller_id, state)
 
 
-@router.get('/{user_id}/my_buying/bought_before', response_model=List[ProductDisplay])
+@router.get('/bought-before', response_model=List[ProductDisplay])
 def get_products_bought_by_user(user_id: int, db: Session = Depends(get_db)):
     return db_product.get_products_bought_by_user(db, user_id)
 
 
-@router.get('/{user_id}/my_buying/my_biddings', response_model=List[ProductDisplay])
+@router.get('/my-bids', response_model=List[ProductDisplay])
 def get_products_user_is_bidding_on(user_id: int, db: Session = Depends(get_db)):
     return db_product.get_products_user_is_bidding_on(db, user_id)
