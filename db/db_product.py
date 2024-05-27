@@ -3,7 +3,6 @@ from schemas.product import ProductBase
 from db.models import DbProduct, DbBid, DbAddress
 from schemas.bid import BidStatus
 from schemas.product import StateEnum, ProductCardDisplay
-from db import db_bid
 
 
 def add_product(db: Session, request: ProductBase):
