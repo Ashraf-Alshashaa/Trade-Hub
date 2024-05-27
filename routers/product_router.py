@@ -43,28 +43,49 @@ def delete_product(id: int, db: Session = Depends(get_db), current_user: UserBas
     return db_product.delete_product(db, id)
 
 
-@router.get('/my-sales', response_model=List[ProductDisplay])
+@router.get('/{seller_id}/my-sales', response_model=List[ProductDisplay])
 def get_products_by_seller(
         seller_id: int,
         db: Session = Depends(get_db)
 ):
-    return db_product.get_products_by_seller(db, seller_id)
+    products = db_product.get_products_by_seller(db, seller_id)
+
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")
+    return products
 
 
-@router.get('/my-sales/state', response_model=List[ProductDisplay])
+@router.get('/{seller_id}/my-sales/state', response_model=List[ProductDisplay])
 def get_products_by_seller_and_state(
         seller_id: int,
         state: StateEnum = Query(...),
         db: Session = Depends(get_db)
 ):
-    return db_product.get_products_by_seller_and_state(db, seller_id, state)
+    products = db_product.get_products_by_seller_and_state(db, seller_id, state)
+
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")
+    return products
 
 
-@router.get('/bought-before', response_model=List[ProductDisplay])
-def get_products_bought_by_user(user_id: int, db: Session = Depends(get_db)):
-    return db_product.get_products_bought_by_user(db, user_id)
+@router.get('/{current_user.id}/bought-before', response_model=List[ProductDisplay])
+def get_products_bought_by_user(
+        db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+):
+
+    products = db_product.get_products_bought_by_user(db, current_user.id)
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found")
+    return products
 
 
-@router.get('/my-bids', response_model=List[ProductDisplay])
-def get_products_user_is_bidding_on(user_id: int, db: Session = Depends(get_db)):
-    return db_product.get_products_user_is_bidding_on(db, user_id)
+@router.get('/{current_user.id}/my-bids', response_model=List[ProductDisplay])
+def get_products_user_is_bidding_on(
+        db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+):
+    products = db_product.get_products_user_is_bidding_on(db, current_user.id)
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found")
+    return products
