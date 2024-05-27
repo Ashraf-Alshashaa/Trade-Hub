@@ -3,6 +3,7 @@ from schemas.product import ProductBase
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
 from schemas.product import StateEnum
+from db import db_bid
 
 
 def add_product(db: Session, request: ProductBase):
@@ -74,3 +75,27 @@ def get_products_user_is_bidding_on(db: Session, user_id: int) -> List[DbProduct
     ).all()
     product_ids = [bid.product_id for bid in pending_bids]
     return db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
+
+
+def get_cart(db: Session, user_id: int) -> List[DbProduct]:
+    won_bids = db.query(DbBid).filter(
+            DbBid.bidder_id == user_id,
+            DbBid.status == BidStatus.ACCEPTED
+    ).all()
+    product_ids = [bid.product_id for bid in won_bids]
+    return db.query(DbProduct).filter(
+        DbProduct.id.in_(product_ids),
+        DbProduct.state != StateEnum.SOLD
+    ).all()
+
+
+def delete_product_from_cart(db: Session, product_id: int, user_id: int):
+    bid = db.query(DbBid).filter(
+        DbBid.product_id == product_id,
+        DbBid.bidder_id == user_id
+    ).first()
+    if bid:
+        db_bid.delete_bid(db, bid.id)
+    else:
+        raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart item not found")
+    db.commit()
