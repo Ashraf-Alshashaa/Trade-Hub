@@ -17,12 +17,11 @@ def get_cart(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products in cart")
         return products
 
-@router.delete("/remove_product/{cart_item_id}")
+
+@router.delete("/remove_product/{product_id}")
 def delete_product_from_cart(
         product_id: int,
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
 ):
-    cart_item = db_product.delete_product_from_cart(db, product_id, current_user.id)
-
-    return cart_item, {"message": "Product removed from cart successfully"}
+    return db_product.delete_product_from_cart(db, product_id, current_user.id)

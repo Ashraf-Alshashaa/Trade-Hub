@@ -77,7 +77,7 @@ def get_products_user_is_bidding_on(db: Session, user_id: int) -> List[DbProduct
     return db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
 
 
-def get_cart(db: Session, user_id: int) -> List[DbProduct]:
+def get_cart(db: Session, user_id: int):
     won_bids = db.query(DbBid).filter(
             DbBid.bidder_id == user_id,
             DbBid.status == BidStatus.ACCEPTED
@@ -92,10 +92,11 @@ def get_cart(db: Session, user_id: int) -> List[DbProduct]:
 def delete_product_from_cart(db: Session, product_id: int, user_id: int):
     bid = db.query(DbBid).filter(
         DbBid.product_id == product_id,
-        DbBid.bidder_id == user_id
+        DbBid.bidder_id == user_id,
+        DbBid.status == BidStatus.ACCEPTED
     ).first()
-    if bid:
-        db_bid.delete_bid(db, bid.id)
-    else:
+    if not bid:
         raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart item not found")
+    db_bid.delete_bid(db, bid.id)
     db.commit()
+    return 'Cart item deleted'
