@@ -12,8 +12,14 @@ router = APIRouter(
 def register_user(request: UserBase, db: Session = Depends(get_db)):
     return db_user.register_user(db, request)
 
-  
-@router.put('/{id}', response_model=UserDisplay)
+
+@router.get('/')
+def get_user(db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    id = current_user.id
+    return db_user.get_user_by_id(db, id)
+
+
+@router.put('/{id}/update', response_model=UserDisplay)
 def update_user(id: int, request: UserBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Ensure that the current user is updating their own account
     if current_user.id != id:
