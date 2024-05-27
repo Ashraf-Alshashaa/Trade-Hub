@@ -3,6 +3,7 @@ from schemas.product import ProductBase
 from db.models import DbProduct, DbBid, DbAddress, DbUser
 from schemas.bid import BidStatus
 from schemas.product import StateEnum
+from db import db_bid
 
 
 def add_product(db: Session, request: ProductBase):
@@ -89,7 +90,7 @@ def get_available_products(db: Session):
         address = db.query(DbAddress).filter(
             DbAddress.user_id == product.seller_id 
             ).first(),
-        bids = db.query(DbBid).filter(DbBid.product_id == product.id).all()
+        bids = db_bid.get_all_bids(db, product.id)
         result.append({
             "id": product.id,
             "name": product.name,
