@@ -1,4 +1,5 @@
 from . import *
+from schemas.user_address import AddressPrivateDisplay
 
 
 class UserBase(BaseModel):
@@ -10,6 +11,7 @@ class UserBase(BaseModel):
 class UserDisplay(BaseModel):
     username: str
     email: str
+    address: AddressPrivateDisplay
 
     class Config:
         orm_mode = True

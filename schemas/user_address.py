@@ -7,7 +7,7 @@ class AddressBase(BaseModel):
     city: str
     country: str
     postcode: str
-    user_id : int
+    user_id: int
 
 
 class AddressPrivateDisplay(BaseModel):

@@ -1,7 +1,5 @@
 from . import *
-
-
-EXPECTED_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+from schemas.user_address import AddressPublicDisplay
 
 
 class ConditionEnum(str, Enum):
