@@ -13,6 +13,11 @@ def add_product(request: ProductBase, db: Session = Depends(get_db), current_use
     return db_product.add_product(db, request)
 
 
+@router.get('')
+def get_product(db: Session = Depends(get_db)):
+    return "ok"
+
+
 @router.get('/{id}', response_model=ProductDisplay)
 def get_product(id: int, db: Session = Depends(get_db)):
     return db_product.get_product(db, id)
