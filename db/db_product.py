@@ -36,14 +36,12 @@ def modify_product(db: Session, id: int, request: ProductBase):
                 DbProduct.name: request.name,
                 DbProduct.image: request.image,
                 DbProduct.description: request.description,
-                DbProduct.seller_id: request.seller_id,
-                DbProduct.buyer_id: request.buyer_id,
                 DbProduct.price: request.price,
                 DbProduct.date: request.date,
                 DbProduct.condition: request.condition,
                 DbProduct.state: request.state})
     db.commit()
-    return item
+    return item.first()
 
 
 def delete_product(db: Session, id: int):
