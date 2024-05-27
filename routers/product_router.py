@@ -14,7 +14,7 @@ def add_product(request: ProductBase, db: Session = Depends(get_db), current_use
     return db_product.add_product(db, request)
 
 @router.get('/bought-before', response_model=List[ProductDisplay])
-def get_products_bought_by_user_1(
+def get_products_bought_by_user(
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
 ):
