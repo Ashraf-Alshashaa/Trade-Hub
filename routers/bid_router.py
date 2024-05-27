@@ -9,7 +9,7 @@ from typing import List
 router = APIRouter(prefix='/bid', tags=['bid'])
 
 
-@router.post('/add', response_model= BidDisplay)
+@router.post('/add', response_model=BidDisplay)
 def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Set the bidder_id to the current user's id
     request.bidder_id = current_user.id
