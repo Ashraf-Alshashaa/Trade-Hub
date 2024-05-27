@@ -8,6 +8,7 @@ class AddressBase(BaseModel):
     country: str
     postcode: str
     user_id: int
+    default: bool
 
 
 class AddressPrivateDisplay(BaseModel):

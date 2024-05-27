@@ -8,6 +8,7 @@ def insert_address(session, address):
                 country=address['country'],
                 postcode=address['postcode'],
                 house_number=address['house_number'],
-                user_id=address['user_id']
+                user_id=address['user_id'],
+                default=address['default']
             ))
     session.commit()
