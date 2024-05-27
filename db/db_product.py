@@ -1,6 +1,6 @@
 from . import *
 from schemas.product import ProductBase
-from db.models import DbProduct, DbBid
+from db.models import DbProduct, DbBid, DbAddress, DbUser
 from schemas.bid import BidStatus
 from schemas.product import StateEnum
 
@@ -74,3 +74,35 @@ def get_products_user_is_bidding_on(db: Session, user_id: int) -> List[DbProduct
     ).all()
     product_ids = [bid.product_id for bid in pending_bids]
     return db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
+
+
+def get_available_products(db: Session):
+    result = []
+    products = db.query(DbProduct).filter(
+            DbProduct.state == StateEnum.AVAILABLE,
+    ).all()
+
+    for product in products:
+        seller = db.query(DbUser).filter(
+            DbUser.id == product.seller_id,
+        ).first()
+        address = db.query(DbAddress).filter(
+            DbAddress.user_id == product.seller_id 
+            ).first(),
+        bids = db.query(DbBid).filter(DbBid.product_id == product.id).all()
+        result.append({
+            "id": product.id,
+            "name": product.name,
+            "image": product.image,
+            "price": product.price,
+            "condition": product.condition,
+            "description": product.description,
+            "date": product.date,
+            "address": address[0].postcode,
+            "seller_id": product.seller_id,
+            "seller_name":seller.username,
+            "seller_email":seller.email,
+            "bids": [{k: v for k, v in vars(bid).items() if k != 'product_id'} for bid in bids]
+        })
+
+    return result

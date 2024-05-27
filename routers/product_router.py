@@ -37,8 +37,8 @@ def get_products_user_is_bidding_on(
 
 
 @router.get('')
-def get_product(db: Session = Depends(get_db)):
-    return "ok"
+def get_available_products(db: Session = Depends(get_db)):
+    return db_product.get_available_products(db)
 
 
 @router.get('/{id}', response_model=ProductDisplay)
