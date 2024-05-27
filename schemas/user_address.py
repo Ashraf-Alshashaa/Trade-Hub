@@ -12,7 +12,7 @@ class AddressBase(BaseModel):
 
 
 class AddressPrivateDisplay(BaseModel):
-    street: str
+    street_name: str
     house_number: int
     city: str
     country: str

@@ -28,15 +28,20 @@ def get_user_by_username(db: Session, username: str):
 
 
 def get_user_by_id(db: Session, id: int):
+    db_user = db.query(DbUser).filter(DbUser.id == id).first()
+    address = db.query(DbAddress).filter(DbAddress.default, db_user.id == DbAddress.user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
     if is_first_address(db, id):
-        address = db.query(DbAddress).filter(DbAddress.default).first()
-        return UserDisplay(
-            username=DbUser.username,
-            email=DbUser.email,
-            address=address
-        )
-    return db.query(DbUser).filter(DbUser.id == id).first()
-
+        db_address = db.query(DbAddress).filter(DbAddress.default).first()
+        if not db_address:
+            address = None
+    user = UserDisplay(
+        username=db_user.username,
+        email=db_user.email,
+        address=address
+    )
+    return user
 
 def update_user(db: Session, id: int, request: UserBase):
     user = db.query(DbUser).filter(DbUser.id == id)

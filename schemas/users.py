@@ -11,7 +11,7 @@ class UserBase(BaseModel):
 class UserDisplay(BaseModel):
     username: str
     email: str
-    address: AddressPrivateDisplay
+    address: Optional[AddressPrivateDisplay] = None
 
     class Config:
         orm_mode = True
