@@ -1,8 +1,8 @@
 from . import *
 from schemas.product import ProductBase
-from db.models import DbProduct, DbBid, DbAddress, DbUser
+from db.models import DbProduct, DbBid, DbAddress
 from schemas.bid import BidStatus
-from schemas.product import StateEnum
+from schemas.product import StateEnum, ProductCardDisplay
 from db import db_bid
 
 
@@ -77,33 +77,34 @@ def get_products_user_is_bidding_on(db: Session, user_id: int) -> List[DbProduct
     return db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
 
 
-def get_available_products(db: Session):
-    result = []
+def get_available_products(db: Session) -> List[ProductCardDisplay]:
+    result: List[ProductCardDisplay] = []
     products = db.query(DbProduct).filter(
             DbProduct.state == StateEnum.AVAILABLE,
-    ).all()
+    ).order_by(DbProduct.date.desc()).all()
 
     for product in products:
-        seller = db.query(DbUser).filter(
-            DbUser.id == product.seller_id,
-        ).first()
-        address = db.query(DbAddress).filter(
+        address: str = db.query(DbAddress).filter(
             DbAddress.user_id == product.seller_id 
             ).first(),
-        bids = db_bid.get_all_bids(db, product.id)
-        result.append({
-            "id": product.id,
-            "name": product.name,
-            "image": product.image,
-            "price": product.price,
-            "condition": product.condition,
-            "description": product.description,
-            "date": product.date,
-            "address": address[0].postcode,
-            "seller_id": product.seller_id,
-            "seller_name":seller.username,
-            "seller_email":seller.email,
-            "bids": [{k: v for k, v in vars(bid).items() if k != 'product_id'} for bid in bids]
-        })
+        
+        if address:
+            location = address[0].postcode
+        else:
+            location = "Unknown"
 
-    return result
+        product_card = ProductCardDisplay(
+            id=product.id,
+            name=product.name,
+            image=product.image,
+            price=product.price,
+            condition=product.condition,
+            description=product.description,
+            date=product.date,
+            state=product.state,
+            location=location,
+            seller_id=product.seller_id,
+        )
+        result.append(product_card)
+
+    return result 
