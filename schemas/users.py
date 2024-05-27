@@ -1,5 +1,5 @@
 from . import *
-from schemas.user_address import AddressPrivateDisplay
+from schemas.user_address import AddressPrivateDisplay, AddressBase
 
 
 class UserBase(BaseModel):

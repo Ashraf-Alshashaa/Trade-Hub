@@ -2,6 +2,9 @@ from . import *
 from db.models import DbUser
 from schemas.users import UserBase
 from auth.hash import Hash
+from db.db_user_address import is_first_address
+from schemas.users import UserDisplay
+from db.models import DbAddress
 
 
 def register_user(db: Session, request: UserBase):
@@ -22,6 +25,17 @@ def get_user_by_username(db: Session, username: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'User with username {username} not found')
     return user
+
+
+def get_user_by_id(db: Session, id: int):
+    if is_first_address(db, id):
+        address = db.query(DbAddress).filter(DbAddress.default).first()
+        return UserDisplay(
+            username=DbUser.username,
+            email=DbUser.email,
+            address=address
+        )
+    return db.query(DbUser).filter(DbUser.id == id).first()
 
 
 def update_user(db: Session, id: int, request: UserBase):
