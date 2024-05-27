@@ -83,10 +83,13 @@ def get_cart(db: Session, user_id: int):
             DbBid.status == BidStatus.ACCEPTED
     ).all()
     product_ids = [bid.product_id for bid in won_bids]
-    return db.query(DbProduct).filter(
+    products = db.query(DbProduct).filter(
         DbProduct.id.in_(product_ids),
         DbProduct.state != StateEnum.SOLD
     ).all()
+    total_price = sum(product.price for product in products)
+    return products, total_price
+
 
 
 def delete_product_from_cart(db: Session, product_id: int, user_id: int):
