@@ -24,6 +24,18 @@ def get_products_bought_by_user_1(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found")
     return products
 
+@router.get('/my-bids', response_model=List[ProductDisplay])
+def get_products_user_is_bidding_on(
+        db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+):
+    
+    products = db_product.get_products_user_is_bidding_on(db, current_user.id)
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found")
+    return products
+
+
 @router.get('/{id}', response_model=ProductDisplay)
 def get_product(id: int, db: Session = Depends(get_db)):
     return db_product.get_product(db, id)
@@ -75,15 +87,4 @@ def get_products_by_seller_and_state(
 
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")
-    return products
-
-
-@router.get('/{current_user.id}/my-bids', response_model=List[ProductDisplay])
-def get_products_user_is_bidding_on(
-        db: Session = Depends(get_db),
-        current_user: UserBase = Depends(get_current_user)
-):
-    products = db_product.get_products_user_is_bidding_on(db, current_user.id)
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found")
     return products
