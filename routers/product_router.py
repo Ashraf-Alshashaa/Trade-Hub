@@ -1,6 +1,6 @@
 from . import *
 from db import db_product
-from schemas.product import ProductDisplay, ProductBase
+from schemas.product import ProductDisplay, ProductBase, ProductCardDisplay
 from schemas.product import StateEnum
 from sqlalchemy.sql.sqltypes import List
 
@@ -36,7 +36,7 @@ def get_products_user_is_bidding_on(
     return products
 
 
-@router.get('')
+@router.get('', response_model=List[ProductCardDisplay])
 def get_available_products(db: Session = Depends(get_db)):
     return db_product.get_available_products(db)
 
