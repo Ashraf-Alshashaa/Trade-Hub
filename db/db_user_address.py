@@ -48,7 +48,7 @@ def modify_address(db: Session, id: int, request: AddressBase):
     if not address:
         raise status.HTTPException(status_code=404, detail="Address not found")
     address.update({
-                DbAddress.street_name: request.street,
+                DbAddress.street_name: request.street_name,
                 DbAddress.house_number: request.house_number,
                 DbAddress.city: request.city,
                 DbAddress.country: request.country,
