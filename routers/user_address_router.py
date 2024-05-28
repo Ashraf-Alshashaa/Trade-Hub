@@ -24,7 +24,7 @@ def all_my_addresses(db: Session = Depends(get_db), default: Optional[bool] = No
             return db_user_address.my_addresses(db, current_user.id)
         return db_user_address.get_default_address(db, current_user.id)
     except AttributeError:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No such address exists!")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No such address exists!")
 
 
 @router.get('/{id}', response_model=AddressPrivateDisplay)
@@ -45,6 +45,8 @@ def modify_address(request: AddressBase, id: int,
                    default: Optional[bool] = None,
                    current_user: UserBase = Depends(get_current_user)):
     address = db_user_address.get_address(db, id)
+    if not address:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No such address exists!")
     if default != None:
         return db_user_address.set_default_address(db, id, current_user.id)
     if current_user.id != address.user_id:
