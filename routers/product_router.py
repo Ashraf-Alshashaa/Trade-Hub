@@ -4,7 +4,6 @@ from schemas.product import ProductDisplay, ProductBase
 from schemas.product import StateEnum
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
-from fastapi import HTTPException, status
 
 
 router = APIRouter(prefix='/products', tags=['products'])
