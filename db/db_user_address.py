@@ -12,7 +12,7 @@ def is_first_address(db: Session, current_user: int):
 
 def add_address(db: Session, request: AddressBase, user_id: int):
     new_address = DbAddress(
-                    street_name=request.street,
+                    street_name=request.street_name,
                     house_number=request.house_number,
                     city=request.city,
                     country=request.country,
