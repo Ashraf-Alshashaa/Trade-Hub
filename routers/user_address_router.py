@@ -34,10 +34,10 @@ def get_address_privately(id: int, db: Session = Depends(get_db),
 @router.get('/', response_model=AddressPrivateDisplay)
 def my_address(db: Session = Depends(get_db),
                current_user: UserBase = Depends(get_current_user)):
-    address = db_user_address.get_default_address(db)
+    address = db_user_address.get_default_address(db, current_user.id)
     if current_user.id != address.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to see this address!")
-    return db_user_address.get_default_address(db)
+    return db_user_address.get_default_address(db, current_user.id)
 
 
 @router.put('/modify/{id}', response_model=AddressPrivateDisplay)
