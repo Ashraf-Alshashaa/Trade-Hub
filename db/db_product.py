@@ -26,7 +26,10 @@ def get_all_products(db: Session):
 
 
 def get_product(db: Session, id: int):
-    return db.query(DbProduct).filter(DbProduct.id == id).first()
+    item = db.query(DbProduct).filter(DbProduct.id == id).first()
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Product not found")
+    return item
 
 
 def modify_product(db: Session, id: int, request: ProductBase):
@@ -55,15 +58,24 @@ def delete_product(db: Session, id: int):
 
 
 def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum):
-    return db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
+    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Products not found")
+    return item
 
 
 def get_products_by_seller(db: Session, seller_id: int):
-    return db.query(DbProduct).filter(DbProduct.seller_id == seller_id).all()
+    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id).all()
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Products not found")
+    return item
 
 
 def get_products_bought_by_user(db: Session, user_id: int):
-    return db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
+    item = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Products not found")
+    return item
 
 
 def get_products_user_is_bidding_on(db: Session, user_id: int):
@@ -72,4 +84,7 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
             DbBid.status == BidStatus.PENDING
     ).all()
     product_ids = [bid.product_id for bid in pending_bids]
-    return db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
+    item = db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
+    if not item:
+        raise status.HTTPException(status_code=404, detail="Product not found")
+    return item
