@@ -10,6 +10,7 @@ def add_product(db: Session, request: ProductBase):
                     name=request.name,
                     image=request.image,
                     description=request.description,
+                    seller_id=request.seller_id,
                     price=request.price,
                     date=request.date,
                     condition=request.condition,
