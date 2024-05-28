@@ -68,7 +68,7 @@ def set_default_address(db: Session, id: int, current_user: int):
 
 
 def get_default_address(db: Session, user_id: int):
-    return db.query(DbAddress).filter(DbAddress.default, DbAddress.user_id == user_id).first()
+    return db.query(DbAddress).filter(DbAddress.default, DbAddress.user_id == user_id).all()
 
 
 def delete_address(db: Session, id: int):
