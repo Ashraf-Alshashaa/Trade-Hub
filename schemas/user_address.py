@@ -2,7 +2,7 @@ from . import *
 
 
 class AddressBase(BaseModel):
-    street: str
+    street_name: str
     house_number: int
     city: str
     country: str

@@ -17,12 +17,9 @@ def add_address(request: AddressBase, db: Session = Depends(get_db),
 
 
 @router.get('/my-addresses', response_model=List[AddressPrivateDisplay])
-def my_addresses(id: int = Query(..., alias='user_id'),
-                 db: Session = Depends(get_db),
+def all_my_addresses(db: Session = Depends(get_db),
                  current_user: UserBase = Depends(get_current_user)):
-    if current_user.id != id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to see this address!")
-    return db_user_address.my_addresses(db, id)
+    return db_user_address.my_addresses(db, current_user.id)
 
 
 @router.get('/{id}')
