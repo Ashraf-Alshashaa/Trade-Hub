@@ -10,8 +10,6 @@ def add_product(db: Session, request: ProductBase):
                     name=request.name,
                     image=request.image,
                     description=request.description,
-                    seller_id=request.seller_id,
-                    buyer_id=request.buyer_id,
                     price=request.price,
                     date=request.date,
                     condition=request.condition,
@@ -55,19 +53,19 @@ def delete_product(db: Session, id: int):
     return 'ok'
 
 
-def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum) -> List[DbProduct]:
+def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum):
     return db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
 
 
-def get_products_by_seller(db: Session, seller_id: int) -> List[DbProduct]:
+def get_products_by_seller(db: Session, seller_id: int):
     return db.query(DbProduct).filter(DbProduct.seller_id == seller_id).all()
 
 
-def get_products_bought_by_user(db: Session, user_id: int) -> List[DbProduct]:
+def get_products_bought_by_user(db: Session, user_id: int):
     return db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
 
 
-def get_products_user_is_bidding_on(db: Session, user_id: int) -> List[DbProduct]:
+def get_products_user_is_bidding_on(db: Session, user_id: int):
     pending_bids = db.query(DbBid).filter(
             DbBid.bidder_id == user_id,
             DbBid.status == BidStatus.PENDING
