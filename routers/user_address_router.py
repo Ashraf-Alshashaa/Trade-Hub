@@ -23,9 +23,15 @@ def all_my_addresses(db: Session = Depends(get_db),
 
 
 @router.get('/{id}')
-def get_address_privately(id: int, db: Session = Depends(get_db),
+def get_address_privately(address_id: int, db: Session = Depends(get_db),
                           current_user: UserBase = Depends(get_current_user)):
-    return db_user_address.get_address(db, id)
+    try:
+        addresses = db_user_address.my_addresses(db, current_user.id)
+        filtered_address = [adr for adr in addresses if adr.id == address_id]
+        if filtered_address[0].id == address_id:
+            return db_user_address.get_address(db, address_id)
+    except IndexError as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to see this address!")
 
 
 @router.get('/', response_model=AddressPrivateDisplay)
