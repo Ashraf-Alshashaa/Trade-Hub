@@ -38,7 +38,10 @@ def get_products_user_is_bidding_on(
 
 @router.get('', response_model=List[ProductCardDisplay])
 def get_available_products(db: Session = Depends(get_db)):
-    return db_product.get_available_products(db)
+    products = db_product.get_available_products(db)
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found")
+    return products
 
 
 @router.get('/{id}', response_model=ProductDisplay)
