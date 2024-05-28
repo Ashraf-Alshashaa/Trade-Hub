@@ -14,7 +14,7 @@ class UserDisplay(BaseModel):
     address: Optional[AddressPrivateDisplay] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserAuth(BaseModel):

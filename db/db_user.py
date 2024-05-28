@@ -1,10 +1,10 @@
 from . import *
 from db.models import DbUser
-from schemas.users import UserBase
+from schemas.users import UserBase, UserDisplay
 from auth.hash import Hash
 from db.db_user_address import is_first_address
-from schemas.users import UserDisplay
 from db.models import DbAddress
+from schemas.user_address import AddressPrivateDisplay
 
 
 def register_user(db: Session, request: UserBase):
@@ -29,17 +29,21 @@ def get_user_by_username(db: Session, username: str):
 
 def get_user_by_id(db: Session, id: int):
     db_user = db.query(DbUser).filter(DbUser.id == id).first()
-    address = db.query(DbAddress).filter(DbAddress.default, db_user.id == DbAddress.user_id).first()
+    address = db.query(DbAddress).filter(DbAddress.default, DbAddress.user_id == db_user.id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     if is_first_address(db, id):
         db_address = db.query(DbAddress).filter(DbAddress.default).first()
         if not db_address:
             address = None
+
+# Convert address to AddressPrivateDisplay if address is not None
+    address_display = AddressPrivateDisplay.from_orm(address) if address else None
+
     user = UserDisplay(
         username=db_user.username,
         email=db_user.email,
-        address=address
+        address=address_display
     )
     return user
 

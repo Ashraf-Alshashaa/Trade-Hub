@@ -19,7 +19,7 @@ class AddressPrivateDisplay(BaseModel):
     house_number: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AddressPublicDisplay(BaseModel):
@@ -27,5 +27,5 @@ class AddressPublicDisplay(BaseModel):
     city: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
