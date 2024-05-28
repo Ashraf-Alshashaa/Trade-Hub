@@ -36,6 +36,11 @@ def get_products_user_is_bidding_on(
     return products
 
 
+@router.get('/search')
+def search_products(srearch_str: str):
+    return srearch_str
+
+
 @router.get('/{id}', response_model=ProductDisplay)
 def get_product(id: int, db: Session = Depends(get_db)):
     return db_product.get_product(db, id)
