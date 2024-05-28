@@ -54,12 +54,9 @@ def modify_address(request: AddressBase, id: int,
                    db: Session = Depends(get_db),
                    current_user: UserBase = Depends(get_current_user)):
     address = db_user_address.get_address(db, id)
-    try:
-        if current_user.id != address.user_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this address!")
-        return db_user_address.modify_address(db, id, request)
-    except AttributeError:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No such address exists!")
+    if current_user.id != address.user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this address!")
+    return db_user_address.modify_address(db, id, request)
 
 
 @router.put('/default/{id}')
@@ -67,12 +64,9 @@ def my_default_address(id: int,
                        db: Session = Depends(get_db),
                        current_user: UserBase = Depends(get_current_user)):
     address = db_user_address.get_address(db, id)
-    try:
-        if current_user.id != address.user_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this address!")
-        return db_user_address.set_default_address(db, id, current_user.id)
-    except AttributeError:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No such address exists!")
+    if current_user.id != address.user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this address!")
+    return db_user_address.set_default_address(db, id, current_user.id)
 
 
 
