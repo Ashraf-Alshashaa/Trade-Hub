@@ -1,7 +1,6 @@
 from . import *
 from schemas.product import ProductBase
-from db.models import DbProduct, DbBid
-from schemas.bid import BidStatus
+from db.models import DbProduct
 
 
 def add_product(db: Session, request: ProductBase):
@@ -21,7 +20,6 @@ def add_product(db: Session, request: ProductBase):
     return new_item
 
 
-# Needs reconsideration - All items based on their state
 def get_all_products(db: Session):
     return db.query(DbProduct).all()
 
@@ -142,4 +140,3 @@ def search(db: Session, search_str: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="There are no products that match that name or description")
     return products
-    
