@@ -1,5 +1,5 @@
 from . import *
-from schemas.users import UserBase, UserDisplay
+from schemas.users import UserBase, UserDisplay, UserUpdateDisplay
 from db import db_user
 
 router = APIRouter(
@@ -8,7 +8,7 @@ router = APIRouter(
 )
 
 
-@router.post('', response_model=UserDisplay)
+@router.post('', response_model=UserUpdateDisplay)
 def register_user(request: UserBase, db: Session = Depends(get_db)):
     return db_user.register_user(db, request)
 
@@ -19,7 +19,7 @@ def get_user(db: Session = Depends(get_db), current_user: UserBase = Depends(get
     return db_user.get_user_by_id(db, id)
 
 
-@router.put('/{id}/update', response_model=UserDisplay)
+@router.put('/{id}/update', response_model=UserUpdateDisplay)
 def update_user(id: int, request: UserBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Ensure that the current user is updating their own account
     if current_user.id != id:

@@ -14,7 +14,16 @@ class UserDisplay(BaseModel):
     address: Optional[AddressPrivateDisplay] = None
 
     class Config:
-        from_attributes = True
+        orm_mode = True
+
+
+class UserUpdateDisplay(BaseModel):
+    username: str
+    email: str
+
+    class Config:
+        orm_mode = True
+
 
 
 class UserAuth(BaseModel):

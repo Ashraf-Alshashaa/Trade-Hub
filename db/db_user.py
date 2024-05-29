@@ -47,6 +47,7 @@ def get_user_by_id(db: Session, id: int):
     )
     return user
 
+
 def update_user(db: Session, id: int, request: UserBase):
     user = db.query(DbUser).filter(DbUser.id == id)
     # handle any exceptions
