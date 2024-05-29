@@ -20,12 +20,13 @@ def add_product(
     return db_product.add_product(db, request)
 
 
-@router.put('', response_model=ProductDisplay)
+@router.put('/{id}', response_model=ProductDisplay)
 def choose_buyer(
-        id: int, db: Session = Depends(get_db),
+        product_id: int,
+        bid_id: Optional[int] = None,
+        db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
 ):
-    product_id = db.query(DbBid).filter(DbBid.id == id).first().product_id
     seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
 
     # Check if the current user is the seller
@@ -33,7 +34,7 @@ def choose_buyer(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Not authorized to the buyer")
 
-    return db_product.choose_buyer(db, id)
+    return db_product.choose_buyer(db, bid_id)
 
 
 @router.get('', response_model=List[ProductDisplay])
