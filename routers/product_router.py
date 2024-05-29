@@ -25,12 +25,12 @@ def add_product(
 def change_product(
         request: ProductBase,
         product_id: int,
-        bid_request: Optional[BidBase] = None,
+        bid_id: Optional[int] = None,
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
 ):
 
-    if bid_request != None:
+    if bid_id != None:
         seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
 
         # Check if the current user is the seller
@@ -38,7 +38,7 @@ def change_product(
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="Not authorized to the buyer")
 
-        return db_product.choose_buyer(db, bid_request)
+        return db_product.choose_buyer(db, bid_id)
 
     product = db_product.get_product(db, product_id)
     if product.seller_id != current_user.id:

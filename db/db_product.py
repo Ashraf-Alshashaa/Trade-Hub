@@ -97,9 +97,9 @@ def get_cart(db: Session, user_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return products
 
-def choose_buyer(db: Session, request: BidBase):
+def choose_buyer(db: Session, bid_id: int):
 
-    bid = request.id
+    bid = db.query(DbBid).filter(DbBid.id == bid_id)
     if not bid:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
 
