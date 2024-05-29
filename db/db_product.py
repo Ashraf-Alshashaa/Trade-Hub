@@ -3,7 +3,6 @@ from schemas.product import ProductBase
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
 from schemas.product import StateEnum
-from db import db_bid
 
 
 def add_product(db: Session, request: ProductBase):
@@ -93,28 +92,24 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
 
 
 def get_cart(db: Session, user_id: int):
-    won_bids = db.query(DbBid).filter(
-            DbBid.bidder_id == user_id,
-            DbBid.status == BidStatus.ACCEPTED
-    ).all()
-    product_ids = [bid.product_id for bid in won_bids]
-    products = db.query(DbProduct).filter(
-        DbProduct.id.in_(product_ids),
-        DbProduct.state != StateEnum.SOLD
-    ).all()
-    total_price = sum(product.price for product in products)
-    return products, total_price
+    products = db.query(DbProduct).filter(DbProduct.buyer_id==user_id).all()
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+    return products
 
+def choose_buyer(db: Session, bid_id: int):
 
-
-def delete_product_from_cart(db: Session, product_id: int, user_id: int):
-    bid = db.query(DbBid).filter(
-        DbBid.product_id == product_id,
-        DbBid.bidder_id == user_id,
-        DbBid.status == BidStatus.ACCEPTED
-    ).first()
+    bid = db.query(DbBid).filter(DbBid.id == bid_id).first()
     if not bid:
-        raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart item not found")
-    db_bid.delete_bid(db, bid.id)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
+
+    product = db.query(DbProduct).filter(DbProduct.id == bid.product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    product.buyer_id = bid.bidder_id
+
+    # Commit the changes to the database
     db.commit()
-    return 'Cart item deleted'
+    return product

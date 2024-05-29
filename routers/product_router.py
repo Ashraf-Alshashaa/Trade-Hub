@@ -1,9 +1,9 @@
 from . import *
 from db import db_product
-from schemas.product import ProductDisplay, ProductBase
-from schemas.product import StateEnum
+from schemas.product import ProductDisplay, ProductBase, StateEnum
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
+from db.models import DbBid, DbProduct
 
 
 router = APIRouter(prefix='/products', tags=['products'])
@@ -20,6 +20,22 @@ def add_product(
     return db_product.add_product(db, request)
 
 
+@router.put('', response_model=ProductDisplay)
+def choose_buyer(
+        id: int, db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+):
+    product_id = db.query(DbBid).filter(DbBid.id == id).first().product_id
+    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
+
+    # Check if the current user is the seller
+    if seller_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to the buyer")
+
+    return db_product.choose_buyer(db, id)
+
+
 @router.get('', response_model=List[ProductDisplay])
 def get_products_filtered(
         db: Session = Depends(get_db),
@@ -27,7 +43,8 @@ def get_products_filtered(
         seller_id: Optional[int] = None,
         state: StateEnum = Query(None),
         buyer_id: Optional[int] = None,
-        bidder_id: Optional[int] = None
+        bidder_id: Optional[int] = None,
+        user_id: Optional[int] = None
 
 ):
     if buyer_id != None:
@@ -43,14 +60,17 @@ def get_products_filtered(
     if seller_id != None:
         if state != None:
             products = db_product.get_products_by_seller_and_state(db, seller_id, state)
-            if not products:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")
             return products
         else:
             products = db_product.get_products_by_seller(db, seller_id)
-            if not products:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")
             return products
+
+    if user_id != None:
+        if user_id != current_user.id:  # and current_user.role != 'admin':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You're only authorized to list bought products of your own")
+        products = db_product.get_cart(db, user_id)
+        return products
 
 
 @router.get('/{id}', response_model=ProductDisplay)
@@ -71,7 +91,11 @@ def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db),
 
 
 @router.delete('/{id}')
-def delete_product(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def delete_product(
+        id: int,
+        db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+):
     # Fetch the product to verify ownership
     product = db_product.get_product(db, id)
     if not product:

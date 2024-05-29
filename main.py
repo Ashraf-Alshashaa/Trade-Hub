@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from db.database import engine
 from db import models
-from routers import user_router, product_router, bid_router, cart_router
+from routers import user_router, product_router, bid_router
 from auth import authentication
 
 
@@ -12,7 +12,6 @@ app.include_router(bid_router.router)
 app.include_router(product_router.router)
 app.include_router(authentication.router)
 app.include_router(user_router.router)
-app.include_router(cart_router.router)
 
 @app.get('/')
 def index():
