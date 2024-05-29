@@ -23,15 +23,15 @@ def add_product(
 
 @router.put('/{id}', response_model=ProductDisplay)
 def change_product(
-        request: ProductBase,
         product_id: int,
         bid_id: Optional[int] = None,
         db: Session = Depends(get_db),
+        request: Optional[ProductBase] = None,
         current_user: UserBase = Depends(get_current_user)
 ):
 
+    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
     if bid_id != None:
-        seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
 
         # Check if the current user is the seller
         if seller_id != current_user.id:
@@ -40,10 +40,12 @@ def change_product(
 
         return db_product.choose_buyer(db, bid_id)
 
-    product = db_product.get_product(db, product_id)
-    if product.seller_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
-    return db_product.modify_product(db, product_id, request)
+    if request != None:
+
+        product = db_product.get_product(db, product_id)
+        if product.seller_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
+        return db_product.modify_product(db, product_id, request)
 
 
 @router.get('', response_model=List[ProductDisplay])
