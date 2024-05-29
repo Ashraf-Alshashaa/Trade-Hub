@@ -1,7 +1,7 @@
 from . import *
 from schemas.product import ProductBase
 from db.models import DbProduct, DbBid
-from schemas.bid import BidStatus
+from schemas.bid import BidStatus, BidBase
 from schemas.product import StateEnum
 
 
@@ -97,9 +97,9 @@ def get_cart(db: Session, user_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return products
 
-def choose_buyer(db: Session, bid_id: int):
+def choose_buyer(db: Session, request: BidBase):
 
-    bid = db.query(DbBid).filter(DbBid.id == bid_id).first()
+    bid = request.id
     if not bid:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
 
@@ -108,7 +108,7 @@ def choose_buyer(db: Session, bid_id: int):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    product.buyer_id = bid.bidder_id
+    product.update({DbProduct.buyer_id: bid.bidder_id})
 
     # Commit the changes to the database
     db.commit()

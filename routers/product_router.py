@@ -4,6 +4,7 @@ from schemas.product import ProductDisplay, ProductBase, StateEnum
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
 from db.models import DbBid, DbProduct
+from schemas.bid import BidBase
 
 
 router = APIRouter(prefix='/products', tags=['products'])
@@ -21,20 +22,28 @@ def add_product(
 
 
 @router.put('/{id}', response_model=ProductDisplay)
-def choose_buyer(
+def change_product(
+        request: ProductBase,
         product_id: int,
-        bid_id: Optional[int] = None,
+        bid_request: Optional[BidBase] = None,
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
 ):
-    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
 
-    # Check if the current user is the seller
-    if seller_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Not authorized to the buyer")
+    if bid_request != None:
+        seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
 
-    return db_product.choose_buyer(db, bid_id)
+        # Check if the current user is the seller
+        if seller_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Not authorized to the buyer")
+
+        return db_product.choose_buyer(db, bid_request)
+
+    product = db_product.get_product(db, product_id)
+    if product.seller_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
+    return db_product.modify_product(db, product_id, request)
 
 
 @router.get('', response_model=List[ProductDisplay])
@@ -77,18 +86,6 @@ def get_products_filtered(
 @router.get('/{id}', response_model=ProductDisplay)
 def get_product(id: int, db: Session = Depends(get_db)):
     return db_product.get_product(db, id)
-
-
-@router.put('/{id}', response_model=ProductDisplay)
-def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
-    # Fetch the product to verify ownership
-    product = db_product.get_product(db, id)
-    if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-
-    if product.seller_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
-    return db_product.modify_product(db, id, request)
 
 
 @router.delete('/{id}')
