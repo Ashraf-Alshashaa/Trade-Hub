@@ -19,4 +19,4 @@ class BidDisplay(BaseModel):
     bidder_id: int
     status: BidStatus
     class Config:
-        orm_mode = True
+        from_attribute = True
