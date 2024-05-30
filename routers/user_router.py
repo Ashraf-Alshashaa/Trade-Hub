@@ -3,8 +3,8 @@ from schemas.users import UserBase, UserDisplay
 from db import db_user
 
 router = APIRouter(
-    prefix='/user',
-    tags=['user']
+    prefix='/users',
+    tags=['users']
 )
 
 
@@ -13,7 +13,7 @@ def register_user(request: UserBase, db: Session = Depends(get_db)):
     return db_user.register_user(db, request)
 
   
-@router.put('/{id}/update', response_model=UserDisplay)
+@router.put('/{id}', response_model=UserDisplay)
 def update_user(id: int, request: UserBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Ensure that the current user is updating their own account
     if current_user.id != id:
@@ -22,7 +22,7 @@ def update_user(id: int, request: UserBase, db: Session = Depends(get_db), curre
     return db_user.update_user(db, id, request)
 
 
-@router.delete('/delete/{id}')
+@router.delete('/{id}')
 def delete_user(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Ensure that the current user is deleting their own account
     if current_user.id != id:
