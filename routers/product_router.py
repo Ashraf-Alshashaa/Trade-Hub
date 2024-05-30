@@ -1,10 +1,9 @@
 from . import *
 from db import db_product
-from schemas.product import ProductDisplay, ProductBase, StateEnum
+from schemas.product import ProductDisplay, ProductBase
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
-from db.models import DbBid, DbProduct
-from schemas.bid import BidBase
+from db.models import DbProduct
 
 
 router = APIRouter(prefix='/products', tags=['products'])
@@ -38,6 +37,7 @@ def get_products_filtered(
         bidder_id: Optional[int] = None,
         user_id: Optional[int] = Query(None, alias='cart of the user')
 ):
+
     """
         Get products filtered by various criteria.
 
@@ -49,14 +49,16 @@ def get_products_filtered(
         - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
         - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
         """
-    if buyer_id != None:
-        if buyer_id != current_user.id: # and current_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You're only authorized to list bought products of your own")
+    if buyer_id is not None:
+        if buyer_id != current_user.id:  # and current_user.role != 'admin':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You're only authorized to list bought products of your own")
         return db_product.get_products_bought_by_user(db, buyer_id)
 
-    if bidder_id != None:
-        if bidder_id != current_user.id: # and current_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You're only authorized to list bids of your own")
+    if bidder_id is not None:
+        if bidder_id != current_user.id:  # and current_user.role != 'admin':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You're only authorized to list bids of your own")
         return db_product.get_products_user_is_bidding_on(db, bidder_id)
 
     if seller_id is not None:

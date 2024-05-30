@@ -21,7 +21,7 @@ def add_product(db: Session, request: ProductBase):
     return new_item
 
 
-# Needs reconsidaration - All items based on their state
+# Needs reconsideration - All items based on their state
 def get_all_products(db: Session):
     return db.query(DbProduct).all()
 
@@ -61,9 +61,9 @@ def delete_product(db: Session, id: int):
 def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
     # Determine the filter condition based on the sold status
     if sold:
-        buyer_id_condition = DbProduct.buyer_id != None
+        buyer_id_condition = DbProduct.buyer_id is not None
     else:
-        buyer_id_condition = DbProduct.buyer_id == None
+        buyer_id_condition = DbProduct.buyer_id is not None
 
     # Query the database with the appropriate filter condition
     products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, buyer_id_condition).all()
@@ -102,10 +102,11 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
 
 
 def get_cart(db: Session, user_id: int):
-    products = db.query(DbProduct).filter(DbProduct.buyer_id==user_id).all()
+    products = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return products
+
 
 def choose_buyer(db: Session, bid_id: int):
 
