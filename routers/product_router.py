@@ -42,7 +42,6 @@ def get_products_filtered(
 
     if seller_id != None:
         if state != None:
-            #return products filtered by state
             products = db_product.get_products_by_seller_and_state(db, seller_id, state)
             if not products:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")
@@ -61,7 +60,6 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 @router.put('/{id}', response_model=ProductDisplay)
 def modify_product(id: int, request: ProductBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
-    # Fetch the product to verify ownership
     product = db_product.get_product(db, id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
