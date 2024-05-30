@@ -4,14 +4,17 @@ from sqlalchemy import join
 from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List
+from notifications.notification import NotificationCenter
 
 
 router = APIRouter(prefix='/bid', tags=['bid'])
+notify = NotificationCenter()
 
 
 @router.post('/add', response_model= BidDisplay)
 def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Set the bidder_id to the current user's id
+    notify.notify_user()
     request.bidder_id = current_user.id
     return db_bid.add_bid(db, request)
 

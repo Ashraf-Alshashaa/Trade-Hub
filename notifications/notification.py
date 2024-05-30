@@ -1,24 +1,21 @@
-class Observable:
+class EmailNotification:
+    def send(self, recipient: str, message: str):
+        print(f"sending an email from TradeHub to {recipient}")
+        print(message)
+
+class InAppNotification:
+    def send(self,recipient: str):
+        print(f"sending an inAppNotification to{recipient}")
+
+
+class NotificationCenter:
     def __init__(self):
-        self.observers = []
+        self.email = EmailNotification()
+        self.in_app = InAppNotification()
 
-    def add_observer(self, observer):
-        if observer not in self.observers:
-            self.observers.append(observer)
-
-    def remove_observer(self, observer):
-        if observer in self.observers:
-            self.observers.remove(observer)
-
-    def notify_observers(self, *args, **kwargs):
-        for observer in self.observers:
-            observer.update(self, *args, **kwargs)
-
-
-class Observer:
-    def update(self, observable, *args, **kwargs):
-        pass
-
-
-
+    def notify_user(self, recipient: str, message: str, urgent: bool):
+        if urgent:
+            self.email.send(recipient, message)
+        else:
+            self.in_app.send(recipient)
 

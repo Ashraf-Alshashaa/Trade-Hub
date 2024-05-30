@@ -38,4 +38,4 @@ class ProductDisplay(BaseModel):
     state: StateEnum
 
     class Config:
-        from_attributes = True
+        orm_mode = True
