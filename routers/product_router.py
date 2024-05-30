@@ -28,6 +28,64 @@ def add_product(
     return db_product.add_product(db, request)
 
 
+@router.get('', response_model=List[ProductDisplay])
+def get_products_filtered(
+        db: Session = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user),
+        seller_id: Optional[int] = None,
+        sold: Optional[bool] = None,
+        buyer_id: Optional[int] = None,
+        bidder_id: Optional[int] = None,
+        user_id: Optional[int] = Query(None, alias='cart of the user')
+):
+    """
+        Get products filtered by various criteria.
+
+        - **db**: Database session.
+        - **current_user**: Currently authenticated user.
+        - **seller_id**: Filter products by seller ID (optional).
+        - **sold**: Add this True/False to see seller's sold/available products (optional).
+        - **buyer_id**: Filter products bought by user (optional).
+        - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
+        - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
+        """
+    if buyer_id != None:
+        if buyer_id != current_user.id: # and current_user.role != 'admin':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You're only authorized to list bought products of your own")
+        return db_product.get_products_bought_by_user(db, buyer_id)
+
+    if bidder_id != None:
+        if bidder_id != current_user.id: # and current_user.role != 'admin':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You're only authorized to list bids of your own")
+        return db_product.get_products_user_is_bidding_on(db, bidder_id)
+
+    if seller_id is not None:
+        if sold is not None:
+            products = db_product.get_products_by_seller_and_state(db, seller_id, sold)
+            return products
+        else:
+            products = db_product.get_products_by_seller(db, seller_id)
+            return products
+
+    if user_id is not None:
+        if user_id != current_user.id:  # and current_user.role != 'admin':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You're only authorized to list bought products of your own")
+        products = db_product.get_cart(db, user_id)
+        return products
+
+
+@router.get('/{id}', response_model=ProductDisplay)
+def get_product(id: int, db: Session = Depends(get_db)):
+    """
+       Get a product by its ID.
+
+       - **id**: ID of the product to retrieve.
+       - **db**: Database session.
+       """
+    return db_product.get_product(db, id)
+
+
 @router.put('/{id}', response_model=ProductDisplay)
 def change_product(
         product_id: int,
@@ -47,7 +105,7 @@ def change_product(
         """
 
     seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
-    if bid_id != None:
+    if bid_id is not None:
 
         # Check if the current user is the seller
         if seller_id != current_user.id:
@@ -56,71 +114,12 @@ def change_product(
 
         return db_product.choose_buyer(db, bid_id)
 
-    if request != None:
+    if request is not None:
 
         product = db_product.get_product(db, product_id)
         if product.seller_id != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
         return db_product.modify_product(db, product_id, request)
-
-
-@router.get('', response_model=List[ProductDisplay])
-def get_products_filtered(
-        db: Session = Depends(get_db),
-        current_user: UserBase = Depends(get_current_user),
-        seller_id: Optional[int] = None,
-        buyer_id: Optional[int] = None,
-        bidder_id: Optional[int] = None,
-        user_id: Optional[int] = Query(None, alias='cart of the user'),
-        sold: Optional[bool] = None
-
-):
-    """
-        Get products filtered by various criteria.
-
-        - **db**: Database session.
-        - **current_user**: Currently authenticated user.
-        - **seller_id**: Filter products by seller ID (optional).
-        - **buyer_id**: Filter products bought by user (optional).
-        - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
-        - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
-        - **sold**: Filter products by state sold/available (optional).
-        """
-    if buyer_id != None:
-        if buyer_id != current_user.id: # and current_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You're only authorized to list bought products of your own")
-        return db_product.get_products_bought_by_user(db, buyer_id)
-
-    if bidder_id != None:
-        if bidder_id != current_user.id: # and current_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You're only authorized to list bids of your own")
-        return db_product.get_products_user_is_bidding_on(db, bidder_id)
-
-    if seller_id != None:
-        if sold:
-            products = db_product.get_products_by_seller_and_state(db, seller_id, sold)
-            return products
-        else:
-            products = db_product.get_products_by_seller(db, seller_id, sold)
-            return products
-
-    if user_id != None:
-        if user_id != current_user.id:  # and current_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="You're only authorized to list bought products of your own")
-        products = db_product.get_cart(db, user_id)
-        return products
-
-
-@router.get('/{id}', response_model=ProductDisplay)
-def get_product(id: int, db: Session = Depends(get_db)):
-    """
-       Get a product by its ID.
-
-       - **id**: ID of the product to retrieve.
-       - **db**: Database session.
-       """
-    return db_product.get_product(db, id)
 
 
 @router.delete('/{id}')

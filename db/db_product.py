@@ -1,8 +1,7 @@
 from . import *
 from schemas.product import ProductBase
 from db.models import DbProduct, DbBid
-from schemas.bid import BidStatus, BidBase
-from schemas.product import StateEnum
+from schemas.bid import BidStatus
 
 
 def add_product(db: Session, request: ProductBase):
@@ -20,6 +19,7 @@ def add_product(db: Session, request: ProductBase):
     db.commit()
     db.refresh(new_item)
     return new_item
+
 
 # Needs reconsidaration - All items based on their state
 def get_all_products(db: Session):
@@ -59,15 +59,20 @@ def delete_product(db: Session, id: int):
 
 
 def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
+    # Determine the filter condition based on the sold status
     if sold:
-        item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id != None).all()
-        if not item:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-        return item
-    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id == None).all()
-    if not item:
+        buyer_id_condition = DbProduct.buyer_id != None
+    else:
+        buyer_id_condition = DbProduct.buyer_id == None
+
+    # Query the database with the appropriate filter condition
+    products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, buyer_id_condition).all()
+
+    # Raise an exception if no products are found
+    if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+
+    return products
 
 
 def get_products_by_seller(db: Session, seller_id: int):
@@ -114,7 +119,7 @@ def choose_buyer(db: Session, bid_id: int):
         raise HTTPException(status_code=404, detail="Product not found")
 
     product.buyer_id = bid.bidder_id
-
+    bid.status = BidStatus.ACCEPTED
     # Commit the changes to the database
     db.commit()
     return product
