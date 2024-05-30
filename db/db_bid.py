@@ -1,6 +1,7 @@
 from . import *
-from schemas.bid import BidBase
-from db.models import DbBid
+from schemas.bid import BidBase, BidStatus
+from db.models import DbBid, DbProduct
+
 
 
 def add_bid(db: Session, request: BidBase):
@@ -33,10 +34,3 @@ def delete_bid(db: Session, id: int):
     db.delete(bid)
     db.commit()
     return 'ok'
-
-  
-def change_bidding_status(db: Session, id: int, request: BidBase):
-    bid = db.query(DbBid).filter(DbBid.id == id)
-    bid.update({DbBid.status: request.status})
-    db.commit()
-    return bid.first()

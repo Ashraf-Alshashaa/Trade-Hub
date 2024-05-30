@@ -10,6 +10,7 @@ def add_product(db: Session, request: ProductBase):
                     image=request.image,
                     description=request.description,
                     seller_id=request.seller_id,
+                    buyer_id=request.buyer_id,
                     price=request.price,
                     date=request.date,
                     condition=request.condition,
@@ -19,7 +20,8 @@ def add_product(db: Session, request: ProductBase):
     db.refresh(new_item)
     return new_item
 
-# Needs reconsidaration - All items based on their state
+
+# Needs reconsideration - All items based on their state
 def get_all_products(db: Session):
     return db.query(DbProduct).all()
 
@@ -56,12 +58,21 @@ def delete_product(db: Session, id: int):
     return 'ok'
 
 
-def get_products_by_seller_and_state(db: Session, seller_id: int, state: str):
-    #filter item py state
-    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
-    if not item:
+def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
+    # Determine the filter condition based on the sold status
+    if sold:
+        buyer_id_condition = DbProduct.buyer_id is not None
+    else:
+        buyer_id_condition = DbProduct.buyer_id is not None
+
+    # Query the database with the appropriate filter condition
+    products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, buyer_id_condition).all()
+
+    # Raise an exception if no products are found
+    if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+
+    return products
 
 
 def get_products_by_seller(db: Session, seller_id: int):
@@ -88,3 +99,28 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return item
+
+
+def get_cart(db: Session, user_id: int):
+    products = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+    return products
+
+
+def choose_buyer(db: Session, bid_id: int):
+
+    bid = db.query(DbBid).filter(DbBid.id == bid_id).first()
+    if not bid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
+
+    product = db.query(DbProduct).filter(DbProduct.id == bid.product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    product.buyer_id = bid.bidder_id
+    bid.status = BidStatus.ACCEPTED
+    # Commit the changes to the database
+    db.commit()
+    return product
