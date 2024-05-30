@@ -3,6 +3,7 @@ from schemas.bid import BidDisplay, BidBase
 from db.models import DbBid, DbProduct
 from db import db_bid
 from typing import List, Optional
+from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/bids', tags=['bids'])
@@ -28,7 +29,11 @@ def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserB
     request.status = "PENDING"
 
     # Add the bid to the database
-    return db_bid.add_bid(db, request)
+    bid = db_bid.add_bid(db, request)
+    product_id = db.query(DbBid).filter(DbBid.id == bid.id).first().product_id
+    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
+    notify.notify_user(seller_id, f"There is a new bid on your product {product_id} ", NotificationType.IN_APP)
+    return bid
 
 
 @router.get('', response_model=List[BidDisplay])
