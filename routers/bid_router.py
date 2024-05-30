@@ -32,7 +32,15 @@ def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserB
     bid = db_bid.add_bid(db, request)
     product_id = db.query(DbBid).filter(DbBid.id == bid.id).first().product_id
     seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
-    notify.notify_user(seller_id, f"There is a new bid on your product {product_id} ", NotificationType.IN_APP)
+    user = db.query(DbUser).filter(DbUser.id == seller_id).first()
+    product = db.query(DbProduct).filter(DbProduct.id == product_id).first()
+    notify.notify_user(NotificationType.IN_APP,
+                       recipient=user.username,
+                       message=f"There is a new bid on your product {product_id} ")
+    # This like to test that the Email notification using MailHog works.
+    notify.notify_user(NotificationType.EMAIL,
+                       recipient=user.email, subject="New bid",
+                       body=f"You have a new bid on your product {product.name}")
     return bid
 
 
