@@ -58,8 +58,13 @@ def delete_product(db: Session, id: int):
     return 'ok'
 
 
-def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum):
-    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
+def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
+    if sold:
+        item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id != None).all()
+        if not item:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+        return item
+    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id == None).all()
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return item
