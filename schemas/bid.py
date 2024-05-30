@@ -19,4 +19,4 @@ class BidDisplay(BaseModel):
     bidder_id: int
     status: BidStatus
     class Config:
-        from_attribute = True
+        from_attributes = True

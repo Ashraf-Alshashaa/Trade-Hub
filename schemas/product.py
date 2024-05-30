@@ -38,4 +38,4 @@ class ProductDisplay(BaseModel):
     state: StateEnum
 
     class Config:
-        from_attribute = True
+        from_attributes = True
