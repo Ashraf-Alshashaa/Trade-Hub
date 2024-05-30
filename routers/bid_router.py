@@ -25,6 +25,7 @@ def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserB
 
     # Set the bidder_id to the current user's id
     request.bidder_id = current_user.id
+    request.status = "PENDING"
 
     # Add the bid to the database
     return db_bid.add_bid(db, request)
