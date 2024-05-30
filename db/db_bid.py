@@ -19,10 +19,17 @@ def add_bid(db: Session, request: BidBase):
 
 
 def get_bid(db: Session, id: int):
-    return db.query(DbBid).filter(DbBid.id == id).first()
+    bid = db.query(DbBid).filter(DbBid.id == id).first()
+    if not bid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Bid with id {id} not found')
+    return bid
 
 
 def get_all_bids(db: Session, id: int):
+    # Check if the product exists
+    product = db.query(DbProduct).filter(DbProduct.id == id).first()
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     return db.query(DbBid).filter(DbBid.product_id == id).all()
 
 
