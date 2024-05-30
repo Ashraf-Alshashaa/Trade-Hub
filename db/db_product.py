@@ -27,13 +27,8 @@ def get_all_products(db: Session):
 
 def get_product(db: Session, id: int):
     item = db.query(DbProduct).filter(DbProduct.id == id).first()
-    address = db.query(DbAddress).filter(DbAddress.default, item.seller_id == DbAddress.user_id).first()
     if not item:
         raise status.HTTPException(status_code=404, detail="Product not found")
-    if is_first_address(db, id):
-        db_address = db.query(DbAddress).filter(DbAddress.default).first()
-        if not db_address:
-            address = None
     product = ProductDisplay(
         name=item.name,
         image=item.image,
@@ -42,7 +37,6 @@ def get_product(db: Session, id: int):
         date=item.date,
         condition=item.condition,
         state=item.state,
-        address=address
     )
     return product
 

@@ -34,7 +34,6 @@ class ProductDisplay(BaseModel):
     date: datetime
     condition: ConditionEnum
     state: StateEnum
-    area: Optional[AddressPublicDisplay] = None
 
     class Config:
         from_attributes = True

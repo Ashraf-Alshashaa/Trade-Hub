@@ -1,6 +1,7 @@
 from . import *
 from schemas.user_address import AddressBase
 from db.models import DbAddress
+from fastapi import status, HTTPException
 
 
 def is_first_address(db: Session, current_user: int):
@@ -32,21 +33,21 @@ def add_address(db: Session, request: AddressBase, user_id: int):
 def my_addresses(db: Session, user_id: int):
     address = db.query(DbAddress).filter(DbAddress.user_id == user_id).all()
     if not address:
-        raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Add your address first.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
     return address
 
 
 def get_address(db: Session, id: int):
     address = db.query(DbAddress).filter(DbAddress.id == id)
     if not address:
-        raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
     return address.first()
 
 
 def modify_address(db: Session, id: int, request: AddressBase):
     address = db.query(DbAddress).filter(DbAddress.id == id)
     if not address:
-        raise status.HTTPException(status_code=404, detail="Address not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
     address.update({
                 DbAddress.street_name: request.street_name,
                 DbAddress.house_number: request.house_number,
@@ -74,7 +75,10 @@ def get_default_address(db: Session, user_id: int):
 def delete_address(db: Session, id: int):
     address = db.query(DbAddress).filter(DbAddress.id == id).first()
     if not address:
-        raise status.HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+    if address.default:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot delete your default address,"
+                                                                             " change it first!")
     db.delete(address)
     db.commit()
     return 'ok'
