@@ -4,19 +4,22 @@ from sqlalchemy import join
 from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List
-from notifications.notification import NotificationCenter
+from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/bid', tags=['bid'])
 notify = NotificationCenter()
 
 
-@router.post('/add', response_model= BidDisplay)
+@router.post('/add', response_model=BidDisplay)
 def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Set the bidder_id to the current user's id
-    notify.notify_user()
     request.bidder_id = current_user.id
-    return db_bid.add_bid(db, request)
+    bid = db_bid.add_bid(db, request)
+    product_id = db.query(DbBid).filter(DbBid.id == bid.id).first().product_id
+    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
+    notify.notify_user(seller_id, f"There is a new bid on your product {product_id} ", NotificationType.IN_APP)
+    return bid
 
 
 @router.get('/product_bids', response_model=List[BidDisplay])
@@ -41,6 +44,8 @@ def change_bid_status(request: BidBase, bid_id: int, db: Session = Depends(get_d
     if seller_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Not authorized to change the status of this bid")
+    # Notify the winner of the auction
+    notify.notify_user(bid.bidder_id,f"Congrats! You won the auction for product {product_id}!", NotificationType.IN_APP)
     return db_bid.change_bidding_status(db, bid_id, request)
 
 
