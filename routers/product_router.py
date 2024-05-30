@@ -1,7 +1,6 @@
 from . import *
 from db import db_product
 from schemas.product import ProductDisplay, ProductBase
-from schemas.product import StateEnum
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
 
@@ -25,7 +24,8 @@ def get_products_filtered(
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user),
         seller_id: Optional[int] = None,
-        state: StateEnum = Query(None),
+        #edit state type
+        state: str = Query(None),
         buyer_id: Optional[int] = None,
         bidder_id: Optional[int] = None
 
@@ -42,6 +42,7 @@ def get_products_filtered(
 
     if seller_id != None:
         if state != None:
+            #return products filtered by state
             products = db_product.get_products_by_seller_and_state(db, seller_id, state)
             if not products:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No products found for this seller")

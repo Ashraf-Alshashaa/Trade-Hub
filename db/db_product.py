@@ -2,7 +2,6 @@ from . import *
 from schemas.product import ProductBase
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
-from schemas.product import StateEnum
 
 
 def add_product(db: Session, request: ProductBase):
@@ -57,7 +56,8 @@ def delete_product(db: Session, id: int):
     return 'ok'
 
 
-def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum):
+def get_products_by_seller_and_state(db: Session, seller_id: int, state: str):
+    #filter item py state
     item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
