@@ -13,7 +13,7 @@ def add_product(db: Session, request: ProductBase):
                     price=request.price,
                     date=request.date,
                     condition=request.condition,
-                    state=request.state)
+                    )
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -42,7 +42,7 @@ def modify_product(db: Session, id: int, request: ProductBase):
                 DbProduct.price: request.price,
                 DbProduct.date: request.date,
                 DbProduct.condition: request.condition,
-                DbProduct.state: request.state})
+                })
     db.commit()
     return item.first()
 
