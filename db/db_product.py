@@ -59,14 +59,11 @@ def delete_product(db: Session, id: int):
 
 
 def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
-    # Determine the filter condition based on the sold status
+     # Determine the filter condition based on the sold status
     if sold:
-        buyer_id_condition = DbProduct.buyer_id is not None
+        products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id != None).all()
     else:
-        buyer_id_condition = DbProduct.buyer_id is None
-
-    # Query the database with the appropriate filter condition
-    products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, buyer_id_condition).all()
+        products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id == None).all()
 
     # Raise an exception if no products are found
     if not products:
