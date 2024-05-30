@@ -14,7 +14,12 @@ class DbUser(Base):
     username = Column(String)
     email = Column(String)
     password = Column(String)
-    address = relationship("DbAddress", back_populates="user")
+    address = relationship("DbAddress", back_populates="user",  cascade="all, delete-orphan")
+    products_selling = relationship("DbProduct", back_populates="seller", cascade="all, delete-orphan",
+                                    foreign_keys="[DbProduct.seller_id]")
+    products_buying = relationship("DbProduct", back_populates="buyer",
+                                   foreign_keys="[DbProduct.buyer_id]")
+    bids = relationship("DbBid", back_populates="user", cascade="all, delete-orphan")
 
 
 class DbAddress(Base):
@@ -41,7 +46,9 @@ class DbProduct(Base):
     date = Column(DateTime)
     condition = Column(Enum(ConditionEnum))
     state = Column(Enum(StateEnum))
-
+    seller = relationship("DbUser", back_populates="products_selling", foreign_keys="[DbProduct.seller_id]")
+    buyer = relationship("DbUser", back_populates="products_buying", foreign_keys="[DbProduct.buyer_id]")
+    bids = relationship("DbBid", back_populates="product", cascade="all, delete-orphan")
 
 
 class DbBid(Base):
@@ -52,3 +59,5 @@ class DbBid(Base):
     product_id = Column(Integer, ForeignKey('products.id'))
     price = Column(Float)
     bidder_id = Column(Integer, ForeignKey('users.id'))
+    product = relationship("DbProduct", back_populates="bids")
+    user = relationship("DbUser", back_populates="bids")
