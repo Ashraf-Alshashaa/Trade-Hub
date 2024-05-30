@@ -14,8 +14,11 @@ class EmailNotification:
         self.server = server
         self.port = port
 
-    def send(self, recipient: str, subject: str, body: str):
-        message = f"Subject: {subject}\n\n{body}"
+    def send(self, **kwargs):
+        recipient = kwargs.get("recipient")
+        subject = kwargs.get("subject")
+        body = kwargs.get("body")
+        message = f"Subject: '{subject}'\n\n{body}"
         with smtplib.SMTP(self.server, self.port) as server:
             server.sendmail(FROM_TRADEHUB, recipient, message)
 
@@ -24,7 +27,10 @@ class EmailNotification:
 
 
 class InAppNotification:
-    def send(self,recipient, message: str):
+
+    def send(self, **kwargs):
+        recipient = kwargs.get("recipient")
+        message = kwargs.get("message")
         print(f"sending an a notification to {recipient}")
         print(message)
 
@@ -34,9 +40,9 @@ class NotificationCenter:
         self.email = EmailNotification()
         self.in_app = InAppNotification()
 
-    def notify_user(self, recipient: int, message: str, type: NotificationType):
+    def notify_user(self,type: NotificationType, **kwargs):
         if type == NotificationType.EMAIL:
-            self.email.send(recipient, message)
+            self.email.send(**kwargs)
         elif type == NotificationType.IN_APP:
-            self.in_app.send(recipient, message)
+            self.in_app.send(**kwargs)
 
