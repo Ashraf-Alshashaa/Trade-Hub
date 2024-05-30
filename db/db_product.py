@@ -116,8 +116,15 @@ def choose_buyer(db: Session, bid_id: int):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
+    # Set the buyer of the product and update the product price
     product.buyer_id = bid.bidder_id
     bid.status = BidStatus.ACCEPTED
+    product.price = bid.price
+
+    # Delete all bids associated with the product
+    db.query(DbBid).filter(DbBid.product_id == product.id).delete()
+
     # Commit the changes to the database
     db.commit()
+
     return product
