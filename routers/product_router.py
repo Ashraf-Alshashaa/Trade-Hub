@@ -30,7 +30,6 @@ def add_product(
 @router.get('', response_model=List[ProductDisplay])
 def get_products_filtered(
         db: Session = Depends(get_db),
-        current_user: UserBase = Depends(get_current_user),
         seller_id: Optional[int] = None,
         sold: Optional[bool] = None,
         buyer_id: Optional[int] = None,
