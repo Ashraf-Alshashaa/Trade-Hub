@@ -99,7 +99,12 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
 
 
 def get_cart(db: Session, user_id: int):
-    products = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
+    products = (
+        db.query(DbProduct)
+        .join(DbBid, DbProduct.id == DbBid.product_id)
+        .filter(DbBid.status == BidStatus.ACCEPTED)
+        .all()
+    )
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return products
@@ -122,7 +127,7 @@ def choose_buyer(db: Session, bid_id: int):
     product.price = bid.price
 
     # Delete all bids associated with the product
-    db.query(DbBid).filter(DbBid.product_id == product.id).delete()
+    # db.query(DbBid).filter(DbBid.product_id == product.id).delete()
 
     # Commit the changes to the database
     db.commit()
