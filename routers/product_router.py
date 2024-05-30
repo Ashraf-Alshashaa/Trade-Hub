@@ -34,7 +34,8 @@ def get_products_filtered(
         sold: Optional[bool] = None,
         buyer_id: Optional[int] = None,
         bidder_id: Optional[int] = None,
-        user_id: Optional[int] = Query(None, alias='cart of the user')
+        user_id: Optional[int] = Query(None, alias='cart of the user'),
+        current_user: UserBase = Depends(get_current_user)
 ):
 
     """
