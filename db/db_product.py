@@ -26,7 +26,6 @@ def get_all_products(db: Session):
 
 def get_product(db: Session, id: int):
     item = db.query(DbProduct).filter(DbProduct.id == id).first()
-    address = db.query(DbAddress).filter(DbAddress.default, item.seller_id == DbAddress.user_id).first()
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     return item

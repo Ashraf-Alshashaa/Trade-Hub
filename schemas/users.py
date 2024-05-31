@@ -19,7 +19,7 @@ class UserDisplay(BaseModel):
 
 class UserPublicDisplay(BaseModel):
     username: str
-    address: Optional[AddressPublicDisplay]
+    address: Optional[AddressPublicDisplay] = None
 
 
 class UserUpdateDisplay(BaseModel):
