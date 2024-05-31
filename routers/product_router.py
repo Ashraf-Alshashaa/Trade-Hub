@@ -1,5 +1,5 @@
 from . import *
-from db import db_product
+from db import db_product, db_bid
 from schemas.product import ProductDisplay, ProductBase
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
@@ -111,14 +111,22 @@ def change_product(
         - **current_user**: Currently authenticated user.
         """
 
-    seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
+    # Retrieve the product from the database
+    product = db_product.get_product(db, product_id)
+
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+
+    seller_id = product.seller_id
+
+    # Check if the current user is the seller
+    if seller_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
+
     if bid_id is not None:
-
-        # Check if the current user is the seller
-        if seller_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="Not authorized to the buyer")
-
+        bid = db_bid.get_bid(db, bid_id)
+        if bid.product_id != product_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this bid")
         return db_product.choose_buyer(db, bid_id)
 
     if request is not None:

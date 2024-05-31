@@ -128,10 +128,6 @@ def choose_buyer(db: Session, bid_id: int):
     bid.status = BidStatus.ACCEPTED
     product.price = bid.price
 
-    # Delete all bids associated with the product
-    # db.query(DbBid).filter(DbBid.product_id == product.id).delete()
-
-    # Commit the changes to the database
     db.commit()
 
     return product
