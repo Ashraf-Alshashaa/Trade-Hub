@@ -136,8 +136,9 @@ def choose_buyer(db: Session, bid_id: int):
 
 def search(db: Session, search_str: str):
     products = db.query(DbProduct).filter(
-        DbProduct.name.ilike(f"%{search_str}%") |
-        DbProduct.description.ilike(f"%{search_str}%")
+        (DbProduct.buyer_id == None) &
+        (DbProduct.name.ilike(f"%{search_str}%") |
+        DbProduct.description.ilike(f"%{search_str}%"))
     ).all()
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
