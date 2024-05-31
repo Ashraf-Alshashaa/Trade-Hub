@@ -29,9 +29,10 @@ def get_user_by_username(db: Session, username: str):
 
 def get_user_by_id(db: Session, id: int):
     db_user = db.query(DbUser).filter(DbUser.id == id).first()
-    address = db.query(DbAddress).filter(DbAddress.default, DbAddress.user_id == db_user.id).first()
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'User not found')
+    address = db.query(DbAddress).filter(DbAddress.default, DbAddress.user_id == db_user.id).first()
     if is_first_address(db, id):
         db_address = db.query(DbAddress).filter(DbAddress.default).first()
         if not db_address:
