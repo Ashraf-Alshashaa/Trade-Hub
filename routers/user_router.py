@@ -1,5 +1,5 @@
 from . import *
-from schemas.users import UserBase, UserDisplay, UserUpdateDisplay
+from schemas.users import UserBase, UserDisplay, UserUpdateDisplay, UserPublicDisplay
 from db import db_user
 
 router = APIRouter(
@@ -13,10 +13,20 @@ def register_user(request: UserBase, db: Session = Depends(get_db)):
     return db_user.register_user(db, request)
 
 
-@router.get('/',response_model=UserDisplay)
-def get_user(db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+@router.get('', response_model= UserPublicDisplay)
+def get_user_publicly(user_id: int, db: Session= Depends(get_db)):
+    try:
+        return db_user.get_user_by_id(db,user_id)
+    except:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This user does not exist.")
+
+@router.get('/{id}',response_model=UserDisplay)
+def get_user(user_id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this user")
     id = current_user.id
     return db_user.get_user_by_id(db, id)
+
 
 
 @router.put('/{id}/update', response_model=UserUpdateDisplay)

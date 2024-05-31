@@ -1,5 +1,5 @@
 from . import *
-from schemas.user_address import AddressPrivateDisplay, AddressBase
+from schemas.user_address import AddressPrivateDisplay, AddressPublicDisplay
 
 
 class UserBase(BaseModel):
@@ -15,6 +15,11 @@ class UserDisplay(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserPublicDisplay(BaseModel):
+    username: str
+    address: Optional[AddressPublicDisplay]
 
 
 class UserUpdateDisplay(BaseModel):
