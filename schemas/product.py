@@ -1,5 +1,4 @@
 from . import *
-from schemas.user_address import AddressPublicDisplay
 
 
 class ConditionEnum(str, Enum):
