@@ -99,14 +99,16 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
 
 
 def get_cart(db: Session, user_id: int):
-    products = (
-        db.query(DbProduct)
-        .join(DbBid, DbProduct.id == DbBid.product_id)
-        .filter(DbBid.status == BidStatus.ACCEPTED)
-        .all()
-    )
+    my_accepted_bids = db.query(DbBid).filter(DbBid.bidder_id == user_id, DbBid.status == BidStatus.ACCEPTED).all()
+    # Extract product IDs from the accepted bids
+    product_ids = [bid.product_id for bid in my_accepted_bids]
+
+    # Query products using the extracted product IDs
+    products = db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
+
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+
     return products
 
 

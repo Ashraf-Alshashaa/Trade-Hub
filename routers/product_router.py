@@ -72,7 +72,7 @@ def get_products_filtered(
     if user_id is not None:
         if user_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="You're only authorized to list bought products of your own")
+                                detail="You're only authorized to see the cart of your own")
         products = db_product.get_cart(db, user_id)
         return products
 
