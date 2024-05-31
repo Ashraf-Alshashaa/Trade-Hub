@@ -43,6 +43,7 @@ def get_products_filtered(
         Get products filtered by various criteria.
 
         - **db**: Database session.
+        - **search_str**: search for product using it's name or description (optional).
         - **current_user**: Currently authenticated user.
         - **seller_id**: Filter products by seller ID (optional).
         - **sold**: Add this True/False to see seller's sold/available products (optional).
