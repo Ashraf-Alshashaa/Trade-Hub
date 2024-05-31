@@ -5,7 +5,7 @@ from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 from schemas.bid import BidStatus
-from schemas.product import StateEnum, ConditionEnum
+from schemas.product import ConditionEnum
 
 
 class DbUser(Base):
@@ -40,7 +40,6 @@ class DbProduct(Base):
     price = Column(Float)
     date = Column(DateTime)
     condition = Column(Enum(ConditionEnum))
-    state = Column(Enum(StateEnum))
 
 
 
