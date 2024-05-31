@@ -9,9 +9,14 @@ router = APIRouter(
 )
 
 
-@router.post('', response_model=AddressPrivateDisplay, )
+@router.post('', response_model=AddressPrivateDisplay)
 def add_address(request: AddressBase, user_id : int, db: Session = Depends(get_db),
                 current_user: UserBase = Depends(get_current_user)):
+    """
+               Add a new address.
+
+               - **user_id**: ID of the user you want to add address to their profile.
+    """
     if user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorised.")
     request.user_id = current_user.id
@@ -23,6 +28,10 @@ def all_my_addresses(user_id : int,
                     db: Session = Depends(get_db),
                     default: Optional[bool] = None,
                     current_user: UserBase = Depends(get_current_user)):
+    """
+               View you addresses. You can see all your addresses as a list.
+               If you set the default variable to true then you only see your default address.
+    """
     if user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorised.")
     if default:
@@ -53,6 +62,12 @@ def modify_address(request: AddressBase,
                    db: Session = Depends(get_db),
                    change_default: bool = False,
                    current_user: UserBase = Depends(get_current_user)):
+    """
+               Modify an existing address or change your default address.
+               When you set the change_default variable to True then by adding the address ID you can set that address ID as your default address.
+
+               - **address_id**: ID of the address to be modified.
+    """
     if user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorised.")
     try:
