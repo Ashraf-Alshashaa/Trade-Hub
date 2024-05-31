@@ -1,9 +1,6 @@
 from . import *
 
 
-EXPECTED_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-
-
 class ConditionEnum(str, Enum):
     NEW = "new"
     USED = "used"
@@ -31,3 +28,4 @@ class ProductDisplay(BaseModel):
 
     class Config:
         from_attributes = True
+

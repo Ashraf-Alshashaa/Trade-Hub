@@ -1,7 +1,7 @@
 from . import *
 from db.database import Base
 from sqlalchemy import Column
-from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum
+from sqlalchemy.sql.sqltypes import Integer, String, Float, DateTime, Enum, Boolean
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 from schemas.bid import BidStatus
@@ -31,6 +31,7 @@ class DbAddress(Base):
     postcode = Column(String)
     house_number = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
+    default = Column(Boolean, nullable=False)
     user = relationship("DbUser", back_populates="address")
 
 
