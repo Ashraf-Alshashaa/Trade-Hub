@@ -142,6 +142,6 @@ def search(db: Session, search_str: str):
     ).all()
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="There are no products much that name or description")
+                                detail="There are no products that match that name or description")
     return products
     
