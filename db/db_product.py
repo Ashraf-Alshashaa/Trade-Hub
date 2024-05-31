@@ -133,3 +133,14 @@ def choose_buyer(db: Session, bid_id: int):
     db.commit()
 
     return product
+
+def search(db: Session, search_str: str):
+    products = db.query(DbProduct).filter(
+        DbProduct.name.ilike(f"%{search_str}%") |
+        DbProduct.description.ilike(f"%{search_str}%")
+    ).all()
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="There are no products much that name or description")
+    return products
+    
