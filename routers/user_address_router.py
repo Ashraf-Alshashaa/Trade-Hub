@@ -77,11 +77,11 @@ def modify_address(request: AddressBase,
 
 
 @router.delete('/{id}')
-def delete_address(id: int,
-                   user_id : int,
+def delete_address(address_id: int,
+                   user_id: int,
                    db: Session = Depends(get_db),
                    current_user: UserBase = Depends(get_current_user)):
-    address = db_user_address.get_address(db, id)
-    if current_user.id != address.user_id:
+    if current_user.id != user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this address!")
-    return db_user_address.delete_address(db, id)
+    return db_user_address.delete_address(db, address_id, user_id)
+
