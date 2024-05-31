@@ -72,11 +72,11 @@ def get_default_address(db: Session, user_id: int):
     return db.query(DbAddress).filter(DbAddress.default, DbAddress.user_id == user_id).all()
 
 
-def delete_address(db: Session, id: int):
+def delete_address(db: Session, id: int, user_id: int):
     address = db.query(DbAddress).filter(DbAddress.id == id).first()
-    count = db.query(DbAddress).filter(DbAddress.id == id).count()
     if not address:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+    count = db.query(DbAddress).filter(DbAddress.user_id == user_id).count()
     if address.default and count != 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot delete your default address,"
                                                                              " change it first!")
