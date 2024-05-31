@@ -29,7 +29,7 @@ def get_user(user_id: int, db: Session = Depends(get_db), current_user: UserBase
 
 
 
-@router.put('/{id}/update', response_model=UserUpdateDisplay)
+@router.put('/{id}', response_model=UserUpdateDisplay)
 def update_user(id: int, request: UserBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Ensure that the current user is updating their own account
     if current_user.id != id:
