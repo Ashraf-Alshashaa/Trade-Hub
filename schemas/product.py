@@ -10,12 +10,6 @@ class ConditionEnum(str, Enum):
     REFURBISHED = "good as new"
 
 
-class StateEnum(str, Enum):
-    AVAILABLE = "available"
-    SOLD = "sold"
-    PENDING = "pending"
-
-
 class ProductBase(BaseModel):
     name: str
     image: str
@@ -25,7 +19,6 @@ class ProductBase(BaseModel):
     price: float
     date: datetime
     condition: ConditionEnum
-    state: StateEnum
 
 
 class ProductDisplay(BaseModel):
@@ -35,7 +28,6 @@ class ProductDisplay(BaseModel):
     price: float
     date: datetime
     condition: ConditionEnum
-    state: StateEnum
 
     class Config:
         from_attributes = True

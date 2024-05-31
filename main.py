@@ -13,7 +13,6 @@ app.include_router(product_router.router)
 app.include_router(authentication.router)
 app.include_router(user_router.router)
 
-
 @app.get('/')
 def index():
   return {'message': 'Welcome to Trade Hub app'}

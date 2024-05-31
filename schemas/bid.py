@@ -3,7 +3,6 @@ from . import *
 class BidStatus(str, Enum):
     PENDING = 'pending'
     ACCEPTED = 'accepted'
-    REJECTED = 'rejected'
 
 class BidBase(BaseModel):
     product_id: int

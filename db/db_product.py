@@ -2,7 +2,6 @@ from . import *
 from schemas.product import ProductBase
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
-from schemas.product import StateEnum
 
 
 def add_product(db: Session, request: ProductBase):
@@ -11,16 +10,18 @@ def add_product(db: Session, request: ProductBase):
                     image=request.image,
                     description=request.description,
                     seller_id=request.seller_id,
+                    buyer_id=request.buyer_id,
                     price=request.price,
                     date=request.date,
                     condition=request.condition,
-                    state=request.state)
+                    )
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
     return new_item
 
-# Needs reconsidaration - All items based on their state
+
+# Needs reconsideration - All items based on their state
 def get_all_products(db: Session):
     return db.query(DbProduct).all()
 
@@ -43,7 +44,7 @@ def modify_product(db: Session, id: int, request: ProductBase):
                 DbProduct.price: request.price,
                 DbProduct.date: request.date,
                 DbProduct.condition: request.condition,
-                DbProduct.state: request.state})
+                })
     db.commit()
     return item.first()
 
@@ -57,11 +58,18 @@ def delete_product(db: Session, id: int):
     return 'ok'
 
 
-def get_products_by_seller_and_state(db: Session, seller_id: int, state: StateEnum):
-    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.state == state).all()
-    if not item:
+def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
+     # Determine the filter condition based on the sold status
+    if sold:
+        products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id != None).all()
+    else:
+        products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id == None).all()
+
+    # Raise an exception if no products are found
+    if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+
+    return products
 
 
 def get_products_by_seller(db: Session, seller_id: int):
@@ -88,3 +96,50 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
     return item
+
+
+def get_cart(db: Session, user_id: int):
+    my_accepted_bids = db.query(DbBid).filter(DbBid.bidder_id == user_id, DbBid.status == BidStatus.ACCEPTED).all()
+    # Extract product IDs from the accepted bids
+    product_ids = [bid.product_id for bid in my_accepted_bids]
+
+    # Query products using the extracted product IDs
+    products = db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
+
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+
+    return products
+
+
+def choose_buyer(db: Session, bid_id: int):
+
+    bid = db.query(DbBid).filter(DbBid.id == bid_id).first()
+    if not bid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
+
+    product = db.query(DbProduct).filter(DbProduct.id == bid.product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Set the buyer of the product and update the product price
+    product.buyer_id = bid.bidder_id
+    bid.status = BidStatus.ACCEPTED
+    product.price = bid.price
+
+    db.commit()
+
+    return product
+
+def search(db: Session, search_str: str):
+    products = db.query(DbProduct).filter(
+        (DbProduct.buyer_id == None) &
+        (DbProduct.name.ilike(f"%{search_str}%") |
+        DbProduct.description.ilike(f"%{search_str}%"))
+    ).all()
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="There are no products that match that name or description")
+    return products
+    

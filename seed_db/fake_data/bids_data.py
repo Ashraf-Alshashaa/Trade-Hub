@@ -12,5 +12,5 @@ def data():
         {'date': datetime(2024, 5, 20, 12, 34, 56, 789012), 'status': schemas.bid.BidStatus.PENDING, 'product_id': 9, 'price': 175.34, 'bidder_id': 1},
         {'date': datetime(2024, 5, 21, 12, 34, 56, 789012), 'status': schemas.bid.BidStatus.PENDING, 'product_id': 4, 'price': 166.45, 'bidder_id': 8},
         {'date': datetime(2024, 5, 22, 12, 34, 56, 789012), 'status': schemas.bid.BidStatus.PENDING, 'product_id': 6, 'price': 180.78, 'bidder_id': 5},
-        {'date': datetime(2024, 5, 23, 12, 34, 56, 789012), 'status': schemas.bid.BidStatus.REJECTED, 'product_id': 10, 'price': 147.23, 'bidder_id': 10}
+        {'date': datetime(2024, 5, 23, 12, 34, 56, 789012), 'status': schemas.bid.BidStatus.PENDING, 'product_id': 10, 'price': 147.23, 'bidder_id': 10}
     ]
