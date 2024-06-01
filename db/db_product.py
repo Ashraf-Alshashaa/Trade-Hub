@@ -21,8 +21,8 @@ def add_product(db: Session, request: ProductBase):
     return new_item
 
 
-def get_all_products(db: Session):
-    return db.query(DbProduct).all()
+def get_all_available_products(db: Session):
+    return db.query(DbProduct).filter(DbProduct.buyer_id == None).all()
 
 
 def get_product(db: Session, id: int):
