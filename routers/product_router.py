@@ -45,6 +45,7 @@ def get_products_filtered(
 
         - **db**: Database session.
         - **search_str**: search for product using it's name or description (optional).
+        - **max_price**: Integer for filtering available products with a price less than or equal to the max_price value (optional).
         - **current_user**: Currently authenticated user.
         - **seller_id**: Filter products by seller ID (optional).
         - **sold**: Add this True/False to see seller's sold/available products (optional).
