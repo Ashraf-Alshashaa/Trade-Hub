@@ -47,6 +47,7 @@ def get_products_filtered(
         - **db**: Database session.
         - **search_str**: search for product using it's name or description (optional).
         - **max_price**: Integer for filtering available products with a price less than or equal to the max_price value (optional).
+        - **min_price**: Integer for filtering available products with a price greater than or equal to the min_price value (optional).
         - **current_user**: Currently authenticated user.
         - **seller_id**: Filter products by seller ID (optional).
         - **sold**: Add this True/False to see seller's sold/available products (optional).
@@ -54,7 +55,7 @@ def get_products_filtered(
         - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
         - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
         """
-    if search_str or max_price:
+    if search_str or max_price or min_price:
         return db_product.filter_available_products(db, search_str, max_price, min_price)    
     if buyer_id is not None:
         if buyer_id != current_user.id:  # and current_user.role != 'admin':
