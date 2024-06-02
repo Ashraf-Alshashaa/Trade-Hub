@@ -131,7 +131,7 @@ def choose_buyer(db: Session, bid_id: int):
 
     return product
 
-def filter_available_products(db: Session, search_str: str = None) -> List[ProductDisplay]:
+def filter_available_products(db: Session, search_str: str = None, max_price: int = None) -> List[ProductDisplay]:
     products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
 
     if search_str and len(search_str) > 0:
@@ -140,6 +140,9 @@ def filter_available_products(db: Session, search_str: str = None) -> List[Produ
             DbProduct.description.ilike(f"%{search_str}%")
         )
 
+    if max_price is not None:
+        products_query = products_query.filter(DbProduct.price <= max_price)
+
     products = products_query.all()
 
     if not products:
@@ -147,4 +150,3 @@ def filter_available_products(db: Session, search_str: str = None) -> List[Produ
                             detail="There are no products that match your filters")
 
     return [ProductDisplay.from_orm(product) for product in products]
-     

@@ -36,6 +36,7 @@ def get_products_filtered(
         buyer_id: Optional[int] = None,
         bidder_id: Optional[int] = None,
         user_id: Optional[int] = Query(None, alias='cart of the user'),
+        max_price: Optional[int] = None,
         current_user: UserBase = Depends(get_current_user)
 ):
 
@@ -51,8 +52,8 @@ def get_products_filtered(
         - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
         - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
         """
-    if search_str:
-        return db_product.filter_available_products(db, search_str)    
+    if search_str or max_price:
+        return db_product.filter_available_products(db, search_str, max_price)    
     if buyer_id is not None:
         if buyer_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
