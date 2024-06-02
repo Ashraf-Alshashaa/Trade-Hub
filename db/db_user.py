@@ -13,9 +13,17 @@ def register_user(db: Session, request: UserBase):
         email=request.email,
         password=Hash.bcrypt(request.password)
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="This email is already registered")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An unexpected error occurred: " + str(e))
+    
     return new_user
 
 
