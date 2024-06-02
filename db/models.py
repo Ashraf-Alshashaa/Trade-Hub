@@ -11,7 +11,7 @@ from schemas.product import ConditionEnum
 class DbUser(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String)
+    username = Column(String, unique=True)
     email = Column(String)
     password = Column(String)
     address = relationship("DbAddress", back_populates="user",  cascade="all, delete-orphan")
