@@ -27,7 +27,7 @@ def add_product(
     return db_product.add_product(db, request)
 
 
-@router.get('',)# response_model=List[ProductDisplay])
+@router.get('', response_model=List[ProductDisplay])
 def get_products_filtered(
         db: Session = Depends(get_db),
         search_str: Optional[str] = None,
@@ -52,8 +52,7 @@ def get_products_filtered(
         - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
         """
     if search_str:
-        return db_product.search(db, search_str)
-    
+        return db_product.filter_available_products(db, search_str)    
     if buyer_id is not None:
         if buyer_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,

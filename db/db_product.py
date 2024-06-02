@@ -1,5 +1,5 @@
 from . import *
-from schemas.product import ProductBase
+from schemas.product import ProductBase, ProductDisplay
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
 
@@ -131,13 +131,20 @@ def choose_buyer(db: Session, bid_id: int):
 
     return product
 
-def search(db: Session, search_str: str):
-    products = db.query(DbProduct).filter(
-        (DbProduct.buyer_id == None) &
-        (DbProduct.name.ilike(f"%{search_str}%") |
-        DbProduct.description.ilike(f"%{search_str}%"))
-    ).all()
+def filter_available_products(db: Session, search_str: str = None) -> List[ProductDisplay]:
+    products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
+
+    if search_str and len(search_str) > 0:
+        products_query = products_query.filter(
+            DbProduct.name.ilike(f"%{search_str}%") |
+            DbProduct.description.ilike(f"%{search_str}%")
+        )
+
+    products = products_query.all()
+
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="There are no products that match that name or description")
-    return products
+                            detail="There are no products that match your filters")
+
+    return [ProductDisplay.from_orm(product) for product in products]
+     
