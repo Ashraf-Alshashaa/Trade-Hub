@@ -131,7 +131,11 @@ def choose_buyer(db: Session, bid_id: int):
 
     return product
 
-def filter_available_products(db: Session, search_str: str = None, max_price: int = None) -> List[ProductDisplay]:
+def filter_available_products(
+        db: Session, search_str: str = None, 
+        max_price: int = None,
+        min_price: int = None
+        ) -> List[ProductDisplay]:
     products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
 
     if search_str and len(search_str) > 0:
@@ -140,8 +144,11 @@ def filter_available_products(db: Session, search_str: str = None, max_price: in
             DbProduct.description.ilike(f"%{search_str}%")
         )
 
-    if max_price is not None:
+    if max_price:
         products_query = products_query.filter(DbProduct.price <= max_price)
+
+    if min_price:
+        products_query = products_query.filter(DbProduct.price >= min_price)
 
     products = products_query.all()
 
