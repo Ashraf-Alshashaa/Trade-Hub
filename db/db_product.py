@@ -136,6 +136,28 @@ def filter_available_products(
         max_price: int = None,
         min_price: int = None
         ) -> List[ProductDisplay]:
+    """
+        Filter available products based on search criteria, maximum price, and minimum price.
+
+    Parameters:
+    - **db**: Session
+        Database session. (Required)
+    - **search_str**: Optional[str]
+        Search for products using their name or description. This is an optional string parameter.
+    - **max_price**: Optional[int]
+        Filter products with a price less than or equal to the specified value. This is an optional integer parameter.
+    - **min_price**: Optional[int]
+        Filter products with a price greater than or equal to the specified value. This is an optional integer parameter.
+
+    Returns:
+    - **List[ProductDisplay]**
+        List of products matching the specified filters, serialized as `ProductDisplay` Pydantic models.
+
+    Raises:
+    - **HTTP_404_NOT_FOUND**
+        If no products match the filters.
+    """
+
     products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
 
     if search_str and len(search_str) > 0:
