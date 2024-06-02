@@ -156,4 +156,4 @@ def filter_available_products(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="There are no products that match your filters")
 
-    return [ProductDisplay.from_orm(product) for product in products]
+    return [ProductDisplay.model_validate(product) for product in products]
