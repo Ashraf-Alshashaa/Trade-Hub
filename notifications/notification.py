@@ -27,22 +27,34 @@ class EmailNotification:
 
 
 class InAppNotification:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
 
-    def send(self, **kwargs):
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send(self, **kwargs):
         recipient = kwargs.get("recipient")
         message = kwargs.get("message")
-        print(f"sending an a notification to {recipient}")
-        print(message)
+        for connection in self.active_connections:
+            await connection.send_text(message)
+            print(f"sending an a notification to {recipient}")
+            print(message)
 
 
 class NotificationCenter:
     def __init__(self):
         self.email = EmailNotification()
         self.in_app = InAppNotification()
+        self.websocket: WebSocket
 
-    def notify_user(self,type: NotificationType, **kwargs):
+    async def notify_user(self, type: NotificationType, **kwargs):
         if type == NotificationType.EMAIL:
             self.email.send(**kwargs)
         elif type == NotificationType.IN_APP:
-            self.in_app.send(**kwargs)
+            await self.in_app.send(**kwargs)
 
