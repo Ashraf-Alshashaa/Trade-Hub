@@ -22,7 +22,14 @@ def add_product(db: Session, request: ProductBase):
 
 
 def get_all_available_products(db: Session):
-    return db.query(DbProduct).filter(DbProduct.buyer_id == None).all()
+    available_products = (
+        db.query(DbProduct)
+        .outerjoin(DbBid, (DbProduct.id == DbBid.product_id) & (DbBid.status == BidStatus.ACCEPTED))
+        .filter(DbProduct.buyer_id == None)
+        .filter(DbBid.id == None)
+        .all()
+    )
+    return available_products
 
 
 def get_product(db: Session, id: int):
