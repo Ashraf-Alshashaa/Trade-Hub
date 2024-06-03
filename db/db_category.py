@@ -26,14 +26,16 @@ def get_category(db: Session, id: int):
 def update_category(db: Session, id: int, request: CategoryBase):
     category = db.query(DbCategory).filter(DbCategory.id == id)
 
-    if not category:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'category with id {id} not found')
-    
     category.update({
         DbCategory.name: request.name
     })
     db.commit()
-    return category.first()
+    category = category.first()
+
+    if not category:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'category with id {id} not found')
+    
+    return category
 
 
 def delete_category(db: Session, id: int):
