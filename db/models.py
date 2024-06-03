@@ -46,6 +46,7 @@ class DbProduct(Base):
     price = Column(Float)
     date = Column(DateTime)
     condition = Column(Enum(ConditionEnum))
+    category_id = Column(Integer, ForeignKey('categories.id'))
     seller = relationship("DbUser", back_populates="products_selling", foreign_keys="[DbProduct.seller_id]")
     buyer = relationship("DbUser", back_populates="products_buying", foreign_keys="[DbProduct.buyer_id]")
     bids = relationship("DbBid", back_populates="product", cascade="all, delete-orphan")
@@ -61,3 +62,9 @@ class DbBid(Base):
     bidder_id = Column(Integer, ForeignKey('users.id'))
     product = relationship("DbProduct", back_populates="bids")
     user = relationship("DbUser", back_populates="bids")
+
+
+class DbCategory(Base):
+    __tablename__ = 'categories'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
