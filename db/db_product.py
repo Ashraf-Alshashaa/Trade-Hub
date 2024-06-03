@@ -181,8 +181,4 @@ def filter_available_products(
 
     products = available_products_query.all()
 
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="There are no products that match your filters")
-
     return [ProductDisplay.model_validate(product) for product in products]
