@@ -34,7 +34,6 @@ def update_category(db: Session, id: int, request: CategoryBase):
 
     if not category:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'category with id {id} not found')
-    
     return category
 
 
