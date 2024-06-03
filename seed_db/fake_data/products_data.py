@@ -12,7 +12,7 @@ def data():
         'price': 799.0,
         'date': datetime(2024, 5, 4, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': None,
+        'category_id': 1,
     },
     {
         'name': 'Samsung Galaxy S21',
@@ -23,7 +23,7 @@ def data():
         'price': 699.0,
         'date': datetime(2024, 5, 5, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.USED,
-        'category_id': None,
+        'category_id': 1,
     },
     {
         'name': 'Sony WH-1000XM4 Headphones',
@@ -34,7 +34,7 @@ def data():
         'price': 350.0,
         'date': datetime(2024, 5, 6, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': None,
+        'category_id': 1,
     },
     {
         'name': 'Dell XPS 13 Laptop',
@@ -45,7 +45,7 @@ def data():
         'price': 1200.0,
         'date': datetime(2024, 5, 7, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.USED,
-        'category_id': None,
+        'category_id': 1,
     },
     {
         'name': 'Apple Watch Series 7',
@@ -56,7 +56,7 @@ def data():
         'price': 399.0,
         'date': datetime(2024, 5, 8, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': None,
+        'category_id': 1,
     },
     {
         'name': 'Canon EOS R5 Camera',
@@ -67,7 +67,7 @@ def data():
         'price': 3899.0,
         'date': datetime(2024, 5, 9, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.USED,
-        'category_id': None,
+        'category_id': 1,
     },
     {
         'name': 'PlayStation 5',
@@ -78,7 +78,7 @@ def data():
         'price': 499.0,
         'date': datetime(2024, 5, 10, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': None,
+        'category_id': 2,
     },
     {
         'name': 'Nikon Z6 II',
@@ -89,7 +89,7 @@ def data():
         'price': 1999.0,
         'date': datetime(2024, 5, 11, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.USED,
-        'category_id': None,
+        'category_id': 3,
     },
     {
         'name': 'Microsoft Surface Pro 7',
@@ -100,7 +100,7 @@ def data():
         'price': 899.0,
         'date': datetime(2024, 5, 12, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': None,
+        'category_id': 4,
     },
     {
         'name': 'Bose QuietComfort 35 II',
