@@ -1,6 +1,6 @@
 from . import *
 from schemas.bid import BidDisplay, BidBase
-from db.models import DbBid, DbProduct
+from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List, Optional
 from notifications.notification import NotificationCenter, NotificationType
