@@ -23,3 +23,8 @@ def get_categories(
 @router.put('/{id}', response_model=CategoryDisplay)
 def update_category(request: CategoryBase, id: int, db: Session = Depends(get_db)):
     return db_category.update_category(db, id, request)
+
+
+@router.delete('/{id}')
+def get_bid(id: int, db: Session = Depends(get_db)):
+    return db_category.delete_category(db, id)

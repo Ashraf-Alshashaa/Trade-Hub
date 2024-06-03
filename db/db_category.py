@@ -34,3 +34,13 @@ def update_category(db: Session, id: int, request: CategoryBase):
     })
     db.commit()
     return category.first()
+
+
+def delete_category(db: Session, id: int):
+    category = db.query(DbCategory).filter(DbCategory.id == id).first()
+    
+    if not category:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Category with id {id} not found')
+    db.delete(category)
+    db.commit()
+    return 'ok'
