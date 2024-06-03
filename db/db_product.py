@@ -158,21 +158,26 @@ def filter_available_products(
         If no products match the filters.
     """
 
-    products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
+    available_products_query = (
+        db.query(DbProduct)
+        .outerjoin(DbBid, (DbProduct.id == DbBid.product_id) & (DbBid.status == BidStatus.ACCEPTED))
+        .filter(DbProduct.buyer_id == None)
+        .filter(DbBid.id == None)
+    )
 
     if search_str and len(search_str) > 0:
-        products_query = products_query.filter(
+        available_products_query = available_products_query.filter(
             DbProduct.name.ilike(f"%{search_str}%") |
             DbProduct.description.ilike(f"%{search_str}%")
         )
 
     if max_price:
-        products_query = products_query.filter(DbProduct.price <= max_price)
+        available_products_query = available_products_query.filter(DbProduct.price <= max_price)
 
     if min_price:
-        products_query = products_query.filter(DbProduct.price >= min_price)
+        available_products_query = available_products_query.filter(DbProduct.price >= min_price)
 
-    products = products_query.all()
+    products = available_products_query.all()
 
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
