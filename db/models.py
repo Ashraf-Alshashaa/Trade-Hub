@@ -6,6 +6,7 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 from schemas.bid import BidStatus
 from schemas.product import ConditionEnum
+from schemas.users import UserRole
 
 
 class DbUser(Base):
@@ -14,6 +15,7 @@ class DbUser(Base):
     username = Column(String)
     email = Column(String)
     password = Column(String)
+    role = Column(Enum(UserRole), default=UserRole.USER)
     address = relationship("DbAddress", back_populates="user",  cascade="all, delete-orphan")
     products_selling = relationship("DbProduct", back_populates="seller", cascade="all, delete-orphan",
                                     foreign_keys="[DbProduct.seller_id]")
