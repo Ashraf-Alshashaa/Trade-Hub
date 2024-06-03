@@ -7,7 +7,7 @@ from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/bids', tags=['bids'])
-
+notify = NotificationCenter()
 
 @router.post('', response_model=BidDisplay)
 def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
