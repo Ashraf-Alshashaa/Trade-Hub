@@ -18,3 +18,8 @@ def get_categories(
         db: Session = Depends(get_db)
 ):
     return db_category.get_category(db, category_id)
+
+
+@router.put('/{id}', response_model=CategoryDisplay)
+def update_category(request: CategoryBase, id: int, db: Session = Depends(get_db)):
+    return db_category.update_category(db, id, request)
