@@ -155,9 +155,6 @@ def filter_available_products(
     - **List[ProductDisplay]**
         List of products matching the specified filters, serialized as `ProductDisplay` Pydantic models.
 
-    Raises:
-    - **HTTP_404_NOT_FOUND**
-        If no products match the filters.
     """
 
     available_products_query = (
