@@ -19,7 +19,7 @@ def register_user(db: Session, request: UserBase):
         db.refresh(new_user)
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail="This email is already registered")
+        raise HTTPException(status_code=409, detail="This username is already registered")
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="An unexpected error occurred: " + str(e))
