@@ -2,6 +2,11 @@ from . import *
 from schemas.user_address import AddressPrivateDisplay, AddressPublicDisplay
 
 
+class UserRole(Enum):
+    ADMIN = "admin"
+    USER = "user"
+
+    
 class UserBase(BaseModel):
     username: str
     email: str
