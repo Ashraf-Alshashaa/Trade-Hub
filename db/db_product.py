@@ -2,6 +2,7 @@ from . import *
 from schemas.product import ProductBase, ProductDisplay
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
+from typing import Optional
 
 
 def add_product(db: Session, request: ProductBase):
@@ -132,9 +133,10 @@ def choose_buyer(db: Session, bid_id: int):
     return product
 
 def filter_available_products(
-        db: Session, search_str: str = None, 
-        max_price: int = None,
-        min_price: int = None
+        db: Session, 
+        search_str: Optional[str] = None, 
+        max_price: Optional[int] = None,
+        min_price: Optional[int] = None
         ) -> List[ProductDisplay]:
     """
         Filter available products based on search criteria, maximum price, and minimum price.
