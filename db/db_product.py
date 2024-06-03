@@ -157,12 +157,8 @@ def filter_available_products(
 
     """
 
-    available_products_query = (
-        db.query(DbProduct)
-        .outerjoin(DbBid, (DbProduct.id == DbBid.product_id) & (DbBid.status == BidStatus.ACCEPTED))
-        .filter(DbProduct.buyer_id == None)
-        .filter(DbBid.id == None)
-    )
+    available_products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
+
 
     if search_str and len(search_str) > 0:
         available_products_query = available_products_query.filter(
