@@ -24,6 +24,7 @@ def add_product(
         """
     # Set the seller_id to the current user's id
     request.seller_id = current_user.id
+    request.buyer_id = None
     return db_product.add_product(db, request)
 
 
