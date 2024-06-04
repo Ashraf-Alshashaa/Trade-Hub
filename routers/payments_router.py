@@ -21,6 +21,14 @@ router = APIRouter(prefix='/payments', tags=['payments'])
 def initiate_payment(payment_request: PaymentRequest,
                      db: Session = Depends(get_db),
                      current_user: UserBase = Depends(get_current_user)):
+    """
+        Start the payment session.
+
+        - **payment_request**: input selected product ids, user_id.
+        - **db**: Database session.
+        - **current_user**: Currently authenticated user.
+        """
+    # Set the seller
     # Retrieve items in the user's cart
     cart_items = get_cart(db, payment_request.user_id)
 

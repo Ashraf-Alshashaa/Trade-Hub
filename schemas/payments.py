@@ -10,7 +10,7 @@ class PaymentStatus(str, Enum):
 
 class PaymentRequest(BaseModel):
     product_ids: Optional[List[int]] = None  # List of item IDs to pay for, or None to pay for the whole cart
-    currency: str
+    currency: str = 'eur'
     user_id: int  # User ID to identify the cart
 
 
