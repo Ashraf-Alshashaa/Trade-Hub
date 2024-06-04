@@ -105,18 +105,19 @@ def update_payment_status(payment_id: str,
         payment.status = PaymentStatus.completed
         selected_item_ids = [item.id for item in payment.items]
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
-        paid_products = [db.query(DbProduct).filter(DbProduct.id == id).first().name
-                         for id in selected_item_ids]
-        recipients = [db.query(DbUser).filter(DbUser.id == item).first().email
-                      for item in selected_item_ids]
+        recipients = {db.query(DbUser).filter(DbUser.id == item.seller_id).first().email
+                      for item in payment.items}
 
         notify.notify_user(NotificationType.EMAIL,
                            recipient=current_user.email, subject="Payment " + payment_status,
                            body=f"The payment has been successful! ")
-        for seller, product in recipients, paid_products:
+        for seller in recipients:
+            paid_products = [db.query(DbProduct).filter(DbProduct.id == id, DbUser.email == seller).first().name
+                             for id in selected_item_ids]
+            paid_products = ','.join(paid_products)
             notify.notify_user(NotificationType.EMAIL,
-                               recipient=seller, subject="Payment " + payment_status,
-                               body=f"Your product {product} is sold! ")
+                               recipient=seller, subject="Your products are sold!",
+                               body=f" You sold {paid_products} ! ")
 
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed

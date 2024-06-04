@@ -143,11 +143,7 @@ def change_product(
         bidder = db.query(DbUser).filter(DbUser.id == bid.bidder_id).first()
         notify.notify_user(NotificationType.EMAIL,
                            recipient=bidder.email, subject="Congratulations! You won the auction!",
-                           body=f"Hi {bidder.name}! \n\n Your bid for {product.name} is chosen by the seller!")
-
-
-
-
+                           body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
         return db_product.choose_buyer(db, bid_id)
 
     if request is not None:
