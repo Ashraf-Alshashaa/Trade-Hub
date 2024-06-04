@@ -3,11 +3,12 @@ from db import db_product, db_bid
 from schemas.product import ProductDisplay, ProductBase
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
-from db.models import DbProduct
+from db.models import DbProduct, DbUser
+from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/products', tags=['products'])
-
+notify = NotificationCenter()
 
 @router.post('', response_model=ProductDisplay)
 def add_product(
@@ -139,6 +140,14 @@ def change_product(
         bid = db_bid.get_bid(db, bid_id)
         if bid.product_id != product_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this bid")
+        bidder = db.query(DbUser).filter(DbUser.id == bid.bidder_id).first()
+        notify.notify_user(NotificationType.EMAIL,
+                           recipient=bidder.email, subject="Congratulations! You won the auction!",
+                           body=f"Hi {bidder.name}! \n\n Your bid for {product.name} is chosen by the seller!")
+
+
+
+
         return db_product.choose_buyer(db, bid_id)
 
     if request is not None:
