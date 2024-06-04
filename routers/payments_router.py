@@ -82,7 +82,7 @@ def initiate_payment(payment_request: PaymentRequest,
 
 @router.put("/{payment_id}", response_model=PaymentResponse, summary="Update Payment Status")
 def update_payment_status(payment_id: str,
-                          status: PaymentStatus,
+                          payment_status: PaymentStatus,
                           db: Session = Depends(get_db),
                           current_user: UserBase = Depends(get_current_user)):
     payment = db.query(DbPayment).filter(DbPayment.id == payment_id, DbPayment.user_id == current_user.id).first()
@@ -90,12 +90,12 @@ def update_payment_status(payment_id: str,
     if not payment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
 
-    if status == PaymentStatus.completed:
+    if payment_status == PaymentStatus.completed:
         payment.status = PaymentStatus.completed
         selected_item_ids = [item.id for item in payment.items]
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
 
-    elif status == PaymentStatus.failed:
+    elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
 
     db.commit()
