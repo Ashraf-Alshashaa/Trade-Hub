@@ -169,6 +169,7 @@ def choose_buyer(db: Session, bid_id: int):
 def filter_available_products(
         db: Session, 
         search_str: Optional[str] = None, 
+        category_id: Optional[int] = None,
         max_price: Optional[int] = None,
         min_price: Optional[int] = None
         ) -> List[ProductDisplay]:
@@ -180,6 +181,8 @@ def filter_available_products(
         Database session. (Required)
     - **search_str**: Optional[str]
         Search for products using their name or description. This is an optional string parameter.
+    - **category_id**: Optional[int]
+        Filter products with a category. This is an optional integer parameter.
     - **max_price**: Optional[int]
         Filter products with a price less than or equal to the specified value. This is an optional integer parameter.
     - **min_price**: Optional[int]
@@ -199,6 +202,9 @@ def filter_available_products(
             DbProduct.name.ilike(f"%{search_str}%") |
             DbProduct.description.ilike(f"%{search_str}%")
         )
+
+    if category_id:
+        available_products_query = available_products_query.filter(DbProduct.category_id == category_id)
 
     if max_price:
         available_products_query = available_products_query.filter(DbProduct.price <= max_price)
