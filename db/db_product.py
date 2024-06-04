@@ -113,14 +113,23 @@ def get_products_bought_by_user(db: Session, user_id: int):
 
 def get_products_user_is_bidding_on(db: Session, user_id: int):
     pending_bids = db.query(DbBid).filter(
-            DbBid.bidder_id == user_id,
-            DbBid.status == BidStatus.PENDING
+        DbBid.bidder_id == user_id,
+        DbBid.status == BidStatus.PENDING
     ).all()
-    product_ids = [bid.product_id for bid in pending_bids]
-    item = db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
-    if not item:
+
+    # Extract product IDs from pending bids
+    product_ids_with_pending_bids = {bid.product_id for bid in pending_bids}
+
+    # Get products where there is no buyer_id and all bids are PENDING
+    products = db.query(DbProduct).filter(
+        DbProduct.id.in_(product_ids_with_pending_bids),  # Filter by products with pending bids
+        DbProduct.buyer_id.is_(None)  # Filter by products without a buyer
+    ).all()
+
+    if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+
+    return products
 
 
 def get_cart(db: Session, user_id: int):
