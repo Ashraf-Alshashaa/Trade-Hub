@@ -40,7 +40,7 @@ async def add_bid(request: BidBase, db: Session = Depends(get_db), current_user:
 
     print(connections[user.id])
     await notify.notify_user(NotificationType.IN_APP,
-                       recipient=connections.keys(),
+                       recipient=user.id,
                        message=f"There is a new bid on your product {product_id} ")
     return bid
 
@@ -56,6 +56,7 @@ def get_all_bids(
 @router.get('/{id}', response_model=BidDisplay)
 def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
+
 
 @router.websocket("/{user_id}")
 async def websocket_endpoint(user_id: int, websocket: WebSocket):
