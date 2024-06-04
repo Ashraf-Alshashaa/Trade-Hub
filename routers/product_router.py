@@ -24,10 +24,11 @@ def add_product(
         """
     # Set the seller_id to the current user's id
     request.seller_id = current_user.id
+    request.buyer_id = None
     return db_product.add_product(db, request)
 
 
-@router.get('',)# response_model=List[ProductDisplay])
+@router.get('', response_model=List[ProductDisplay])
 def get_products_filtered(
         db: Session = Depends(get_db),
         search_str: Optional[str] = None,
@@ -36,14 +37,20 @@ def get_products_filtered(
         buyer_id: Optional[int] = None,
         bidder_id: Optional[int] = None,
         user_id: Optional[int] = Query(None, alias='cart of the user'),
+        max_price: Optional[int] = None,
+        min_price: Optional[int] = None,
         current_user: UserBase = Depends(get_current_user)
 ):
 
     """
         Get products filtered by various criteria.
+        
+        If you don't specify any query the Endpoint will return you all available products
 
         - **db**: Database session.
         - **search_str**: search for product using it's name or description (optional).
+        - **max_price**: Integer for filtering available products with a price less than or equal to the max_price value (optional).
+        - **min_price**: Integer for filtering available products with a price greater than or equal to the min_price value (optional).
         - **current_user**: Currently authenticated user.
         - **seller_id**: Filter products by seller ID (optional).
         - **sold**: Add this True/False to see seller's sold/available products (optional).
@@ -51,9 +58,8 @@ def get_products_filtered(
         - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
         - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
         """
-    if search_str:
-        return db_product.search(db, search_str)
-    
+    if search_str or max_price or min_price:
+        return db_product.filter_available_products(db, search_str, max_price, min_price)    
     if buyer_id is not None:
         if buyer_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
@@ -80,6 +86,12 @@ def get_products_filtered(
                                 detail="You're only authorized to see the cart of your own")
         products = db_product.get_cart(db, user_id)
         return products
+    products = db_product.get_all_available_products(db)
+    if products:
+        return products
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="There are no available products")        
 
 
 @router.get('/{id}', response_model=ProductDisplay)

@@ -1,7 +1,8 @@
 from . import *
-from schemas.product import ProductBase
+from schemas.product import ProductBase, ProductDisplay
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
+from typing import Optional
 
 
 def add_product(db: Session, request: ProductBase):
@@ -21,8 +22,15 @@ def add_product(db: Session, request: ProductBase):
     return new_item
 
 
-def get_all_products(db: Session):
-    return db.query(DbProduct).all()
+def get_all_available_products(db: Session):
+    available_products = (
+        db.query(DbProduct)
+        .outerjoin(DbBid, (DbProduct.id == DbBid.product_id) & (DbBid.status == BidStatus.ACCEPTED))
+        .filter(DbProduct.buyer_id == None)
+        .filter(DbBid.id == None)
+        .all()
+    )
+    return available_products
 
 
 def get_product(db: Session, id: int):
@@ -79,10 +87,28 @@ def get_products_by_seller(db: Session, seller_id: int):
 
 
 def get_products_bought_by_user(db: Session, user_id: int):
-    item = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
-    if not item:
+    # Fetch products where buyer_id matches user_id
+    bought_items = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
+
+    if not bought_items:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+
+    # Filter out products with accepted bids
+    valid_products = []
+    for product in bought_items:
+        # Check for accepted bids for each product
+        accepted_bid = db.query(DbBid).filter(
+                DbBid.product_id == product.id,
+                DbBid.status == BidStatus.ACCEPTED
+        ).first()
+
+        if not accepted_bid:
+            valid_products.append(product)
+
+    if not valid_products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No valid products found")
+
+    return valid_products
 
 
 def get_products_user_is_bidding_on(db: Session, user_id: int):
@@ -140,13 +166,46 @@ def choose_buyer(db: Session, bid_id: int):
 
     return product
 
-def search(db: Session, search_str: str):
-    products = db.query(DbProduct).filter(
-        (DbProduct.buyer_id == None) &
-        (DbProduct.name.ilike(f"%{search_str}%") |
-        DbProduct.description.ilike(f"%{search_str}%"))
-    ).all()
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="There are no products that match that name or description")
-    return products
+def filter_available_products(
+        db: Session, 
+        search_str: Optional[str] = None, 
+        max_price: Optional[int] = None,
+        min_price: Optional[int] = None
+        ) -> List[ProductDisplay]:
+    """
+        Filter available products based on search criteria, maximum price, and minimum price.
+
+    Parameters:
+    - **db**: Session
+        Database session. (Required)
+    - **search_str**: Optional[str]
+        Search for products using their name or description. This is an optional string parameter.
+    - **max_price**: Optional[int]
+        Filter products with a price less than or equal to the specified value. This is an optional integer parameter.
+    - **min_price**: Optional[int]
+        Filter products with a price greater than or equal to the specified value. This is an optional integer parameter.
+
+    Returns:
+    - **List[ProductDisplay]**
+        List of products matching the specified filters, serialized as `ProductDisplay` Pydantic models.
+
+    """
+
+    available_products_query = db.query(DbProduct).filter(DbProduct.buyer_id == None)
+
+
+    if search_str and len(search_str) > 0:
+        available_products_query = available_products_query.filter(
+            DbProduct.name.ilike(f"%{search_str}%") |
+            DbProduct.description.ilike(f"%{search_str}%")
+        )
+
+    if max_price:
+        available_products_query = available_products_query.filter(DbProduct.price <= max_price)
+
+    if min_price:
+        available_products_query = available_products_query.filter(DbProduct.price >= min_price)
+
+    products = available_products_query.all()
+
+    return [ProductDisplay.model_validate(product) for product in products]
