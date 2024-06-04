@@ -52,7 +52,6 @@ class DbProduct(Base):
     buyer = relationship("DbUser", back_populates="products_buying", foreign_keys="[DbProduct.buyer_id]")
     bids = relationship("DbBid", back_populates="product", cascade="all, delete-orphan")
     payment_id = Column(Integer, ForeignKey("payments.id"))
-    # payments = relationship("PaymentItem", back_populates="product")
     payment = relationship("DbPayment", back_populates="items")
 
 
