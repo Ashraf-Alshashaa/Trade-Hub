@@ -77,10 +77,3 @@ class DbPayment(Base):
     description = Column(String)
     user = relationship('DbUser', back_populates='payments')
     items = relationship("DbProduct", back_populates="payment")
-
-# class PaymentItem(Base):
-#     __tablename__ = "payment_items"
-#     payment_id = Column(String, ForeignKey("payments.id"), primary_key=True)
-#     product_id = Column(Integer, ForeignKey("products.id"), primary_key=True)
-#     product = relationship("DbProduct", back_populates="payments")
-#     payment = relationship("DbPayment", back_populates="items")
