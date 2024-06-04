@@ -22,7 +22,14 @@ def add_category(
 
 @router.get('', response_model=List[CategoryDisplay])
 def get_categories(
-        category_id: Optional[int] = None,
+        db: Session = Depends(get_db)
+    ):
+    return db_category.get_categories(db)
+
+
+@router.get('/{id}', response_model=CategoryDisplay)
+def get_categorie(
+        category_id: int,
         db: Session = Depends(get_db)
     ):
     return db_category.get_category(db, category_id)
