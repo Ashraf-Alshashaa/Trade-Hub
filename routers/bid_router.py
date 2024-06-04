@@ -37,10 +37,6 @@ def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserB
     notify.notify_user(NotificationType.IN_APP,
                        recipient=user.username,
                        message=f"There is a new bid on your product {product_id} ")
-    # This like to test that the Email notification using MailHog works.
-    notify.notify_user(NotificationType.EMAIL,
-                       recipient=user.email, subject="New bid",
-                       body=f"You have a new bid on your product {product.name}")
     return bid
 
 

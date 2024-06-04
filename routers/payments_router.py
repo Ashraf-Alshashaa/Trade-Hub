@@ -5,9 +5,9 @@ import os
 import stripe
 from dotenv import load_dotenv
 import random
-from fastapi import  status
+from fastapi import status
 from db.db_bid import change_bid_status_to_pending
-from db.models import DbPayment
+from db.models import DbPayment, DbProduct
 from notifications.notification import NotificationCenter, NotificationType
 
 notify = NotificationCenter()
@@ -100,7 +100,7 @@ def update_payment_status(payment_id: str,
 
         notify.notify_user(NotificationType.EMAIL,
                            recipient=current_user.email, subject="Payment " + payment_status,
-                           body=f"The payment for { selected_item_ids } has been successful! ")
+                           body=f"The payment has been successful! ")
 
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
@@ -109,7 +109,6 @@ def update_payment_status(payment_id: str,
                            body=f"The payment has been failed! :( ")
 
     db.commit()
-
 
     return PaymentResponse(
         payment_id=payment.id,
