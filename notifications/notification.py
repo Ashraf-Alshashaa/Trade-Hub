@@ -14,7 +14,7 @@ class EmailNotification:
         self.server = server
         self.port = port
 
-    def send(self, **kwargs):
+    async def send(self, **kwargs):
         recipient = kwargs.get("recipient")
         subject = kwargs.get("subject")
         body = kwargs.get("body")
@@ -32,10 +32,11 @@ class InAppNotification:
 
     async def connect(self, user_id: int, websocket: WebSocket):
         await websocket.accept()
-        print(f"new websocket added to notify  user_ID {user_id}")
+        print(f"new websocket added to notify user_ID {user_id}")
+        print(f"connections[{user_id}]: {websocket}")
         self.active_connections[user_id] = websocket
 
-    def disconnect(self, user_id: int, websocket: WebSocket):
+    def disconnect(self, user_id: int):
         del self.active_connections[user_id]
 
     async def send(self, **kwargs):
@@ -55,7 +56,7 @@ class NotificationCenter:
 
     async def notify_user(self, type: NotificationType, **kwargs):
         if type == NotificationType.EMAIL:
-            self.email.send(**kwargs)
+            await self.email.send(**kwargs)
         elif type == NotificationType.IN_APP:
             await self.in_app.send(**kwargs)
 

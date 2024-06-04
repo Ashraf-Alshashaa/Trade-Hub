@@ -4,14 +4,16 @@ from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List, Optional
 from notifications.notification import NotificationCenter, NotificationType
+from fastapi.websockets import WebSocket, WebSocketDisconnect
 
+connections: [int, WebSocket] = {}
 
 router = APIRouter(prefix='/bids', tags=['bids'])
 notify = NotificationCenter()
 
 
 @router.post('', response_model=BidDisplay)
-def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+async def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Check if the user is authenticated
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You must be authenticated to place a bid")
@@ -35,13 +37,18 @@ def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserB
     seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
     user = db.query(DbUser).filter(DbUser.id == seller_id).first()
     product = db.query(DbProduct).filter(DbProduct.id == product_id).first()
-    notify.notify_user(NotificationType.IN_APP,
-                       recipient=user.username,
+
+    print(connections[user.id])
+    await notify.notify_user(NotificationType.IN_APP,
+                       recipient=connections.keys(),
                        message=f"There is a new bid on your product {product_id} ")
     # This like to test that the Email notification using MailHog works.
-    notify.notify_user(NotificationType.EMAIL,
-                       recipient=user.email, subject="New bid",
-                       body=f"You have a new bid on your product {product.name}")
+    # await notify.notify_user(NotificationType.EMAIL,
+    #                    recipient=user.email, subject="New bid",
+    #                    body=f"You have a new bid on your product {product.name}")
+
+
+
     return bid
 
 
@@ -57,3 +64,12 @@ def get_all_bids(
 def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
 
+@router.websocket("/{user_id}")
+async def websocket_endpoint(user_id: int, websocket: WebSocket):
+    await notify.in_app.connect(user_id, websocket)
+    connections[user_id] = websocket
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        notify.in_app.disconnect(websocket)
