@@ -46,9 +46,6 @@ async def add_bid(request: BidBase, db: Session = Depends(get_db), current_user:
     await notify.notify_user(NotificationType.EMAIL,
                        recipient=user.email, subject="New bid",
                        body=f"You have a new bid on your product {product.name}")
-
-
-
     return bid
 
 
