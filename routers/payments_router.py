@@ -55,10 +55,17 @@ def initiate_payment(payment_request: PaymentRequest,
             user_id=current_user.id,
             amount=total_amount,
             status=PaymentStatus.pending,
-            description="Payment for selected items",
-            items=items_to_pay_for
+            description="Payment for selected items"
         )
         db.add(payment)
+        db.commit()
+
+        db.refresh(payment)
+
+    # Update the payment_id field in the products
+        for item in items_to_pay_for:
+            item.payment_id = payment.id
+
         db.commit()
 
         return PaymentResponse(
@@ -68,6 +75,7 @@ def initiate_payment(payment_request: PaymentRequest,
             description="Payment for selected items",
             items=items_to_pay_for
         )
+
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -84,7 +92,7 @@ def update_payment_status(payment_id: str,
 
     if status == PaymentStatus.completed:
         payment.status = PaymentStatus.completed
-        selected_item_ids = [item.product_id for item in payment.items]
+        selected_item_ids = [item.id for item in payment.items]
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
 
     elif status == PaymentStatus.failed:

@@ -52,7 +52,8 @@ class DbProduct(Base):
     buyer = relationship("DbUser", back_populates="products_buying", foreign_keys="[DbProduct.buyer_id]")
     bids = relationship("DbBid", back_populates="product", cascade="all, delete-orphan")
     payment_id = Column(Integer, ForeignKey("payments.id"))
-    payments = relationship("PaymentItem", back_populates="product")
+    # payments = relationship("PaymentItem", back_populates="product")
+    payment = relationship("DbPayment", back_populates="items")
 
 
 class DbBid(Base):
@@ -75,11 +76,11 @@ class DbPayment(Base):
     status = Column(String)
     description = Column(String)
     user = relationship('DbUser', back_populates='payments')
-    items = relationship("PaymentItem", back_populates="payment")
+    items = relationship("DbProduct", back_populates="payment")
 
-class PaymentItem(Base):
-    __tablename__ = "payment_items"
-    payment_id = Column(String, ForeignKey("payments.id"), primary_key=True)
-    product_id = Column(Integer, ForeignKey("products.id"), primary_key=True)
-    product = relationship("DbProduct", back_populates="payments")
-    payment = relationship("DbPayment", back_populates="items")
+# class PaymentItem(Base):
+#     __tablename__ = "payment_items"
+#     payment_id = Column(String, ForeignKey("payments.id"), primary_key=True)
+#     product_id = Column(Integer, ForeignKey("products.id"), primary_key=True)
+#     product = relationship("DbProduct", back_populates="payments")
+#     payment = relationship("DbPayment", back_populates="items")
