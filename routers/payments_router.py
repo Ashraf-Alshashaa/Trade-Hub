@@ -8,6 +8,9 @@ import random
 from fastapi import  status
 from db.db_bid import change_bid_status_to_pending
 from db.models import DbPayment
+from notifications.notification import NotificationCenter, NotificationType
+
+notify = NotificationCenter()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -95,10 +98,18 @@ def update_payment_status(payment_id: str,
         selected_item_ids = [item.id for item in payment.items]
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
 
+        notify.notify_user(NotificationType.EMAIL,
+                           recipient=current_user.email, subject="Payment " + payment_status,
+                           body=f"The payment for { selected_item_ids } has been successful! ")
+
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
+        notify.notify_user(NotificationType.EMAIL,
+                           recipient=current_user.email, subject="Payment " + payment_status,
+                           body=f"The payment has been failed! :( ")
 
     db.commit()
+
 
     return PaymentResponse(
         payment_id=payment.id,
