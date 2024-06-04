@@ -79,10 +79,29 @@ def get_products_by_seller(db: Session, seller_id: int):
 
 
 def get_products_bought_by_user(db: Session, user_id: int):
-    item = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
-    if not item:
+    subquery = (
+        db.query(DbBid.product_id)
+        .filter(
+            DbBid.bidder_id == user_id,
+            DbBid.status != BidStatus.PENDING
+        )
+        .subquery()
+    )
+
+    products = (
+        db.query(DbProduct)
+        .join(subquery, subquery.c.product_id == DbProduct.id, isouter=True)
+        .filter(
+            DbProduct.buyer_id == user_id,
+            subquery.c.product_id == None  # Products where user has no non-PENDING bids
+        )
+        .all()
+    )
+
+    if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+
+    return products
 
 
 def get_products_user_is_bidding_on(db: Session, user_id: int):
@@ -139,5 +158,5 @@ def search(db: Session, search_str: str):
     ).all()
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="There are no products that match that name or description")
+                            detail="There are no products that match that name or description")
     return products
