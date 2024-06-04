@@ -19,6 +19,7 @@ class ProductBase(BaseModel):
 
 
 class ProductDisplay(BaseModel):
+    id: int
     name: str
     image: str
     description: str
