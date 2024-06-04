@@ -40,12 +40,12 @@ async def add_bid(request: BidBase, db: Session = Depends(get_db), current_user:
 
     print(connections[user.id])
     await notify.notify_user(NotificationType.IN_APP,
-                       recipient=connections.keys(),
+                       recipient=user.id,
                        message=f"There is a new bid on your product {product_id} ")
-    # This like to test that the Email notification using MailHog works.
-    # await notify.notify_user(NotificationType.EMAIL,
-    #                    recipient=user.email, subject="New bid",
-    #                    body=f"You have a new bid on your product {product.name}")
+
+    await notify.notify_user(NotificationType.EMAIL,
+                       recipient=user.email, subject="New bid",
+                       body=f"You have a new bid on your product {product.name}")
 
 
 
@@ -63,6 +63,7 @@ def get_all_bids(
 @router.get('/{id}', response_model=BidDisplay)
 def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
+
 
 @router.websocket("/{user_id}")
 async def websocket_endpoint(user_id: int, websocket: WebSocket):

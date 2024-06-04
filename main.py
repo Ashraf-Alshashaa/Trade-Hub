@@ -13,7 +13,6 @@ app.include_router(product_router.router)
 app.include_router(authentication.router)
 app.include_router(user_router.router)
 app.include_router(user_address_router.router)
-# app.include_router(websocket_router.router)
 
 
 @app.get('/')
