@@ -3,12 +3,12 @@ from schemas.bid import BidDisplay, BidBase
 from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List, Optional
-from notifications.notification import NotificationCenter, NotificationType, InAppNotification
-from fastapi.websockets import WebSocket, WebSocketDisconnect
+from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/bids', tags=['bids'])
 notify = NotificationCenter()
+
 
 @router.post('', response_model=BidDisplay)
 def add_bid(request: BidBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
@@ -57,27 +57,3 @@ def get_all_bids(
 def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
 
-connections: [WebSocket] = []
-inapp = InAppNotification()
-
-@router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await inapp.connect(websocket)
-    try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        inapp.disconnect(websocket)
-
-@router.post("/trigger-event/")
-async def trigger_event(message: str):
-    await notify.notify_user(NotificationType.IN_APP,recipient=1, message=message)
-    return {"message": f"Notification sent{message}"}
-
-#
-# @app.websocket("/ws")
-# async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     while True:
-#         data = await websocket.receive_text()
-#         await websocket.send_text(f"Message text was: {data}")
