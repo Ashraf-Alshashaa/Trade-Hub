@@ -14,7 +14,7 @@ def add_category(
     db: Session = Depends(get_db),
     current_user: UserBase = Depends(get_current_user)
     ):
-    if not current_user or current_user.role != UserRole.ADMIN:
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You're not authorized to add category")
     return db_category.add_category(db, request)
@@ -42,7 +42,7 @@ def update_category(
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    if not current_user or current_user.role != UserRole.ADMIN:
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You're not authorized to update category")
     return db_category.update_category(db, id, request)
@@ -54,7 +54,7 @@ def get_bid(
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    if not current_user or current_user.role != UserRole.ADMIN:
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You're not authorized to delete category")
     return db_category.delete_category(db, id)
