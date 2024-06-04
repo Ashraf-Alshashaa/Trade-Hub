@@ -41,7 +41,7 @@ def get_address(db: Session, id: int):
     address = db.query(DbAddress).filter(DbAddress.id == id)
     if not address:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
-    return address.all()
+    return address.first()
 
 
 def modify_address(db: Session, id: int, request: AddressBase):
