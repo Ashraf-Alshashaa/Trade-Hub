@@ -1,7 +1,7 @@
 from . import *
 from schemas.category import CategoryDisplay, CategoryBase
 from db import db_category
-from typing import List, Optional
+from typing import List
 from schemas.users import UserRole
 
 
