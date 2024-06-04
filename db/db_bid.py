@@ -41,3 +41,23 @@ def delete_bid(db: Session, id: int):
     db.delete(bid)
     db.commit()
     return 'ok'
+
+
+def change_bid_status_to_pending(db: Session, user_id: int, selected_item_ids: List[int] = None):
+    if selected_item_ids:
+        bids = db.query(DbBid).filter(
+            DbBid.bidder_id == user_id,
+            DbBid.product_id.in_(selected_item_ids),
+            DbBid.status == BidStatus.ACCEPTED
+        ).all()
+    else:
+        bids = db.query(DbBid).filter(
+            DbBid.bidder_id == user_id,
+            DbBid.status == BidStatus.ACCEPTED
+        ).all()
+
+    for bid in bids:
+        bid.status = BidStatus.PENDING
+        db.add(bid)
+
+    db.commit()

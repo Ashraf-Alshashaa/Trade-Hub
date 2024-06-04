@@ -12,7 +12,7 @@ from schemas.users import UserRole
 class DbUser(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String)
+    username = Column(String, unique=True)
     email = Column(String)
     password = Column(String)
     role = Column(Enum(UserRole), default=UserRole.USER)
@@ -22,6 +22,8 @@ class DbUser(Base):
     products_buying = relationship("DbProduct", back_populates="buyer",
                                    foreign_keys="[DbProduct.buyer_id]")
     bids = relationship("DbBid", back_populates="user", cascade="all, delete-orphan")
+    # Define relationship to DbPayment
+    payments = relationship("DbPayment", back_populates="user", cascade="all, delete-orphan")
 
 
 class DbAddress(Base):
@@ -52,6 +54,8 @@ class DbProduct(Base):
     seller = relationship("DbUser", back_populates="products_selling", foreign_keys="[DbProduct.seller_id]")
     buyer = relationship("DbUser", back_populates="products_buying", foreign_keys="[DbProduct.buyer_id]")
     bids = relationship("DbBid", back_populates="product", cascade="all, delete-orphan")
+    payment_id = Column(Integer, ForeignKey("payments.id"))
+    payment = relationship("DbPayment", back_populates="items")
 
 
 class DbBid(Base):
@@ -66,7 +70,19 @@ class DbBid(Base):
     user = relationship("DbUser", back_populates="bids")
 
 
+
 class DbCategory(Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
+
+ 
+class DbPayment(Base):
+    __tablename__ = 'payments'
+    id = Column(String, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    amount = Column(Float)
+    status = Column(String)
+    description = Column(String)
+    user = relationship('DbUser', back_populates='payments')
+    items = relationship("DbProduct", back_populates="payment")

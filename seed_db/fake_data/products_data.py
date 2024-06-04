@@ -52,7 +52,7 @@ def data():
         'image': 'apple_watch_series7.png',
         'description': 'Advanced health monitoring features',
         'seller_id': 6,
-        'buyer_id': None,
+        'buyer_id': 4,
         'price': 399.0,
         'date': datetime(2024, 5, 8, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,

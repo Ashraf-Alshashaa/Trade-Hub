@@ -13,9 +13,17 @@ def register_user(db: Session, request: UserBase):
         email=request.email,
         password=Hash.bcrypt(request.password)
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="This username is already registered")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An unexpected error occurred: " + str(e))
+    
     return new_user
 
 
@@ -55,14 +63,22 @@ def update_user(db: Session, id: int, request: UserBase):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'User with id {id} not found')
-    user.update({
-        DbUser.username: request.username,
-        DbUser.email: request.email,
-        DbUser.password: Hash.bcrypt(request.password)
-    })
-    db.commit()
+    try:
+        user.update({
+            DbUser.username: request.username,
+            DbUser.email: request.email,
+            DbUser.password: Hash.bcrypt(request.password)
+        })
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="This username is already registered")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An unexpected error occurred: " + str(e))
+    
     return user.first()
-
+  
   
 def delete_user(db: Session, id: int):
     user = db.query(DbUser).filter(DbUser.id == id).first()
