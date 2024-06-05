@@ -111,13 +111,18 @@ def update_payment_status(payment_id: str,
         notify.notify_user(NotificationType.EMAIL,
                            recipient=current_user.email, subject="Payment " + payment_status,
                            body=f"The payment has been successful! ")
+        paid_products = {}
         for seller in recipients:
-            paid_products = [db.query(DbProduct).filter(DbProduct.id == id, DbUser.email == seller).first().name
-                             for id in selected_item_ids]
-            paid_products = ','.join(paid_products)
+            # Perform a single query to get all paid products for the current seller
+            products = db.query(DbProduct).join(DbUser, DbUser.id == DbProduct.seller_id).filter(
+                    DbProduct.id.in_(selected_item_ids), DbUser.email == seller
+                ).all()
+            paid_products[seller] = [product.name for product in products]
+
+            seller_product = ','.join(paid_products[seller])
             notify.notify_user(NotificationType.EMAIL,
                                recipient=seller, subject="Your products are sold!",
-                               body=f" You sold {paid_products} ! ")
+                               body=f" You sold {seller_product} ! ")
 
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
