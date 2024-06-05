@@ -3,7 +3,7 @@ from db import db_product, db_bid
 from schemas.product import ProductDisplay, ProductBase
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
-from db.models import DbProduct, DbUser
+from db.models import DbProduct, DbUser, DbBid
 from notifications.notification import NotificationCenter, NotificationType
 
 
@@ -143,6 +143,11 @@ async def change_product(
         await notify.notify_user(NotificationType.EMAIL,
                            recipient=bidder.email, subject="Congratulations! You won the auction!",
                            body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
+        other_bidders = db.query(DbUser).join(DbBid, DbUser.id == DbBid.bidder_id).filter(DbBid.product_id == product_id).all()
+        other_bidders = [bidder.id for bidder in other_bidders]
+
+        await notify.in_app.broadcast(
+                                 recipient=other_bidders, message=f"{product.name} is sold.")
         return db_product.choose_buyer(db, bid_id)
 
     if request is not None:
