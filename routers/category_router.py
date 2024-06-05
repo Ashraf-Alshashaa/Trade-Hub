@@ -28,7 +28,7 @@ def get_categories(
 
 
 @router.get('/{id}', response_model=CategoryDisplay)
-def get_categorie(
+def get_category(
         category_id: int,
         db: Session = Depends(get_db)
     ):
@@ -49,7 +49,7 @@ def update_category(
 
 
 @router.delete('/{id}')
-def get_bid(
+def delete_category(
         id: int, 
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
