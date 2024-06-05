@@ -73,13 +73,8 @@ def get_products_filtered(
                                 detail="You're only authorized to list bids of your own")
         return db_product.get_products_user_is_bidding_on(db, bidder_id)
 
-    if seller_id is not None:
-        if sold is not None:
-            products = db_product.get_products_by_seller_and_state(db, seller_id, sold)
-            return products
-        else:
-            products = db_product.get_products_by_seller(db, seller_id)
-            return products
+    if seller_id is not None or sold is not None:
+        return db_product.get_products_by_seller_and_state(db, seller_id, sold)
 
     if user_id is not None:
         if user_id != current_user.id:  # and current_user.role != 'admin':
