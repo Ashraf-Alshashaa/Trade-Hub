@@ -8,7 +8,6 @@ from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/products', tags=['products'])
-notify = NotificationCenter()
 
 @router.post('', response_model=ProductDisplay)
 def add_product(

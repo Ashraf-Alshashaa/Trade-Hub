@@ -4,12 +4,9 @@ from db.models import DbBid, DbProduct, DbUser
 from db import db_bid
 from typing import List, Optional
 from notifications.notification import NotificationCenter, NotificationType
-from fastapi.websockets import WebSocket, WebSocketDisconnect
 
-connections: [int, WebSocket] = {}
 
 router = APIRouter(prefix='/bids', tags=['bids'])
-notify = NotificationCenter()
 
 
 @router.post('', response_model=BidDisplay)
@@ -57,14 +54,3 @@ def get_all_bids(
 @router.get('/{id}', response_model=BidDisplay)
 def get_bid(id: int, db: Session = Depends(get_db)):
     return db_bid.get_bid(db, id)
-
-
-@router.websocket("/{user_id}")
-async def websocket_endpoint(user_id: int, websocket: WebSocket):
-    await notify.in_app.connect(user_id, websocket)
-    connections[user_id] = websocket
-    try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        notify.in_app.disconnect(websocket)
