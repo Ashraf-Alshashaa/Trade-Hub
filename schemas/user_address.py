@@ -12,6 +12,7 @@ class AddressBase(BaseModel):
 
 
 class AddressPrivateDisplay(BaseModel):
+    id: int
     street_name: str
     city: str
     country: str
@@ -23,6 +24,7 @@ class AddressPrivateDisplay(BaseModel):
 
 
 class AddressPublicDisplay(BaseModel):
+    id: int
     postcode: str
     city: str
 
