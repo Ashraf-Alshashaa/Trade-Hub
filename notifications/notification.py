@@ -37,7 +37,8 @@ class InAppNotification:
         self.active_connections[user_id] = websocket
 
     def disconnect(self, user_id: int):
-        del self.active_connections[user_id]
+        if user_id in self.active_connections.keys():
+            del self.active_connections[user_id]
 
     async def send(self, **kwargs):
         recipient = int(kwargs.get("recipient"))
