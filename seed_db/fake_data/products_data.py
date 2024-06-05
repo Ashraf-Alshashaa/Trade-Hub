@@ -112,5 +112,29 @@ def data():
         'date': datetime(2024, 5, 13, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.USED,
         'category_id': 1,
+    },
+    {
+        'name': 'Modern Sofa',
+        'image': 'modern_sofa.png',
+        'description': 'This stylish and comfortable modern sofa features a sleek design with clean lines and a minimalist aesthetic. It is upholstered in high-quality fabric and includes plush cushions for ultimate comfort. Perfect for any contemporary living room setting.',
+        'seller_id': 2,
+        'buyer_id': None,
+        'price': 899.99,
+        'date': datetime(2024, 6, 5, 14, 22, 35, 123456),
+        'condition': schemas.product.ConditionEnum.NEW,
+        'category_id': 2,
     }
-]
+    ,
+    {
+        'name': 'Leather Jacket',
+        'image': 'leather_jacket.png',
+        'description': 'This classic leather jacket is made from premium quality leather and features a stylish and rugged design. It has a comfortable lining, multiple pockets, and durable zippers, making it perfect for both fashion and function.',
+        'seller_id': 5,
+        'buyer_id': 1,
+        'price': 249.99,
+        'date': datetime(2024, 6, 5, 14, 27, 12, 345678),
+        'condition': schemas.product.ConditionEnum.NEW,
+        'category_id': 3,
+        }
+
+    ]
