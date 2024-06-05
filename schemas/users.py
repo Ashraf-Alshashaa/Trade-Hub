@@ -14,6 +14,7 @@ class UserBase(BaseModel):
 
 
 class UserDisplay(BaseModel):
+    id: int
     username: str
     email: str
     address: Optional[AddressPrivateDisplay] = None
@@ -23,12 +24,14 @@ class UserDisplay(BaseModel):
 
 
 class UserPublicDisplay(BaseModel):
+    id: int
     username: str
     email: str
     address: Optional[AddressPublicDisplay] = None
 
 
 class UserUpdateDisplay(BaseModel):
+    id: int
     username: str
     email: str
 
