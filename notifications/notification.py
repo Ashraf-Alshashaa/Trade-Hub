@@ -14,7 +14,7 @@ class EmailNotification:
         self.server = server
         self.port = port
 
-    def send(self, **kwargs):
+    async def send(self, **kwargs):
         recipient = kwargs.get("recipient")
         subject = kwargs.get("subject")
         body = kwargs.get("body")
@@ -27,22 +27,42 @@ class EmailNotification:
 
 
 class InAppNotification:
+    def __init__(self):
+        self.active_connections: Dict[int, WebSocket] = {}
 
-    def send(self, **kwargs):
-        recipient = kwargs.get("recipient")
+    async def connect(self, user_id: int, websocket: WebSocket):
+        await websocket.accept()
+        print(f"new websocket added to notify user_ID {user_id}")
+        print(f"connections[{user_id}]: {websocket}")
+        self.active_connections[user_id] = websocket
+
+    def disconnect(self, user_id: int):
+        del self.active_connections[user_id]
+
+    async def send(self, **kwargs):
+        recipient = int(kwargs.get("recipient"))
         message = kwargs.get("message")
+        await self.active_connections[recipient].send_text(message)
         print(f"sending an a notification to {recipient}")
         print(message)
+
+    async def broadcast(self, **kwargs):
+        message = kwargs.get("message")
+        for user in self.active_connections.keys():
+            await self.active_connections[user].send_text(message)
+            print(f"sending an a notification to {user}")
+            print(message)
 
 
 class NotificationCenter:
     def __init__(self):
         self.email = EmailNotification()
         self.in_app = InAppNotification()
+        self.websocket: WebSocket
 
-    def notify_user(self,type: NotificationType, **kwargs):
+    async def notify_user(self, type: NotificationType, **kwargs):
         if type == NotificationType.EMAIL:
-            self.email.send(**kwargs)
+            await self.email.send(**kwargs)
         elif type == NotificationType.IN_APP:
-            self.in_app.send(**kwargs)
+            await self.in_app.send(**kwargs)
 
