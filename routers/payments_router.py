@@ -92,7 +92,7 @@ def initiate_payment(payment_request: PaymentRequest,
 
 
 @router.put("/{payment_id}", response_model=PaymentResponse, summary="Update Payment Status")
-def update_payment_status(payment_id: str,
+async def update_payment_status(payment_id: str,
                           payment_status: PaymentStatus,
                           db: Session = Depends(get_db),
                           current_user: UserBase = Depends(get_current_user)):
@@ -108,7 +108,7 @@ def update_payment_status(payment_id: str,
         recipients = {db.query(DbUser).filter(DbUser.id == item.seller_id).first().email
                       for item in payment.items}
 
-        notify.notify_user(NotificationType.EMAIL,
+        await notify.notify_user(NotificationType.EMAIL,
                            recipient=current_user.email, subject="Payment " + payment_status,
                            body=f"The payment has been successful! ")
         paid_products = {}
@@ -120,13 +120,13 @@ def update_payment_status(payment_id: str,
             paid_products[seller] = [product.name for product in products]
 
             seller_product = ','.join(paid_products[seller])
-            notify.notify_user(NotificationType.EMAIL,
+            await notify.notify_user(NotificationType.EMAIL,
                                recipient=seller, subject="Your products are sold!",
                                body=f" You sold {seller_product} ! ")
 
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
-        notify.notify_user(NotificationType.EMAIL,
+        await notify.notify_user(NotificationType.EMAIL,
                            recipient=current_user.email, subject="Payment " + payment_status,
                            body=f"The payment has been failed! :( ")
 

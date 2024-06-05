@@ -107,7 +107,7 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 
 @router.put('/{id}', response_model=ProductDisplay)
-def change_product(
+async def change_product(
         product_id: int,
         bid_id: Optional[int] = Query(None, alias='bid_id that won'),
         db: Session = Depends(get_db),
@@ -141,7 +141,7 @@ def change_product(
         if bid.product_id != product_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this bid")
         bidder = db.query(DbUser).filter(DbUser.id == bid.bidder_id).first()
-        notify.notify_user(NotificationType.EMAIL,
+        await notify.notify_user(NotificationType.EMAIL,
                            recipient=bidder.email, subject="Congratulations! You won the auction!",
                            body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
         return db_product.choose_buyer(db, bid_id)
