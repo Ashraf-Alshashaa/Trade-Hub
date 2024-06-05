@@ -10,6 +10,7 @@ def insert_pruduct(session, product):
                 buyer_id=product['buyer_id'],
                 price=product['price'],
                 date=product['date'],
-                condition=product['condition']
+                condition=product['condition'],
+                category_id=product['category_id']
             ))
     session.commit()

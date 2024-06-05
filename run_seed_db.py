@@ -1,13 +1,14 @@
 from db.models import Base
 from db.database import get_db
+from db import db_category
+from db.models import DbCategory
 from seed_db.operations.users import insert_user
 from seed_db.operations.addresses import insert_address
 from seed_db.operations.products import insert_pruduct
 from seed_db.operations.bids import insert_bid
 from main import engine
 from contextlib import contextmanager
-from seed_db.fake_data import addresses_data, bids_data, products_data, users_data
-
+from seed_db.fake_data import addresses_data, bids_data, products_data, users_data, categories_data
 
 @contextmanager
 def get_db_session():
@@ -36,6 +37,11 @@ def seed_db():
         session.commit()
         print(f"{len(addresses_data.data())} addressess has been inserted successfully!")
         
+
+        for category in categories_data.data():
+            db_category.add_category(session, category)
+        print(f"{len(categories_data.data())} categories has been inserted successfully!")
+
 
         for product in products_data.data():
             insert_pruduct(session, product)
