@@ -78,7 +78,7 @@ def data():
         'price': 499.0,
         'date': datetime(2024, 5, 10, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': 2,
+        'category_id': 1,
     },
     {
         'name': 'Nikon Z6 II',
@@ -89,7 +89,7 @@ def data():
         'price': 1999.0,
         'date': datetime(2024, 5, 11, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.USED,
-        'category_id': 3,
+        'category_id': 1,
     },
     {
         'name': 'Microsoft Surface Pro 7',
@@ -100,7 +100,7 @@ def data():
         'price': 899.0,
         'date': datetime(2024, 5, 12, 12, 34, 56, 789012),
         'condition': schemas.product.ConditionEnum.NEW,
-        'category_id': 4,
+        'category_id': 1,
     },
     {
         'name': 'Bose QuietComfort 35 II',
@@ -135,6 +135,18 @@ def data():
         'date': datetime(2024, 6, 5, 14, 27, 12, 345678),
         'condition': schemas.product.ConditionEnum.NEW,
         'category_id': 3,
-        }
+    }
+    ,
+    {
+    'name': 'Tesla Model 3',
+    'image': 'tesla_model3.png',
+    'description': 'The Tesla Model 3 is an all-electric sedan with impressive range, quick acceleration, and advanced autopilot features. It offers a minimalist interior with a large touchscreen display and premium sound system.',
+    'seller_id': 6,
+    'buyer_id': 5,
+    'price': 1300,
+    'date': datetime(2024, 6, 5, 14, 25, 48, 789012),
+    'condition': schemas.product.ConditionEnum.NEW,
+    'category_id': 4,
+    }
 
     ]
