@@ -36,13 +36,14 @@ async def add_bid(request: BidBase, db: Session = Depends(get_db), current_user:
     product_id = db.query(DbBid).filter(DbBid.id == bid.id).first().product_id
     seller_id = db.query(DbProduct).filter(DbProduct.id == product_id).first().seller_id
     user = db.query(DbUser).filter(DbUser.id == seller_id).first()
-    product = db.query(DbProduct).filter(DbProduct.id == product_id).first()
-
-    print(connections[user.id])
-    await notify.notify_user(NotificationType.IN_APP,
+    product = db.query(DbProduct).filter(DbProduct.id == product_id).first().name
+    try:
+        print(connections[user.id])
+        await notify.notify_user(NotificationType.IN_APP,
                        recipient=user.id,
-                       message=f"There is a new bid on your product {product_id} ")
-    return bid
+                       message=f"There is a new bid on {product} ")
+    finally:
+        return bid
 
 
 @router.get('', response_model=List[BidDisplay])
