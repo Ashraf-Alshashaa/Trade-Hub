@@ -141,15 +141,17 @@ async def change_product(
         if bid.product_id != product_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this bid")
         bidder = db.query(DbUser).filter(DbUser.id == bid.bidder_id).first()
-        await notify.notify_user(NotificationType.EMAIL,
-                           recipient=bidder.email, subject="Congratulations! You won the auction!",
-                           body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
         other_bidders = db.query(DbUser).join(DbBid, DbUser.id == DbBid.bidder_id).filter(DbBid.product_id == product_id).all()
         other_bidders = [bidder.id for bidder in other_bidders]
-
+        print(other_bidders)
         await notify.in_app.broadcast(
                                  recipient=other_bidders, message=f"{product.name} is sold.")
-        return db_product.choose_buyer(db, bid_id)
+        try:
+            await notify.notify_user(NotificationType.EMAIL,
+                                     recipient=bidder.email, subject="Congratulations! You won the auction!",
+                                     body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
+        finally:
+            return db_product.choose_buyer(db, bid_id)
 
     if request is not None:
 

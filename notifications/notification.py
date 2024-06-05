@@ -42,16 +42,19 @@ class InAppNotification:
     async def send(self, **kwargs):
         recipient = int(kwargs.get("recipient"))
         message = kwargs.get("message")
-        await self.active_connections[recipient].send_text(message)
-        print(f"sending an a notification to {recipient}")
-        print(message)
+        if recipient in self.active_connections.keys():
+            await self.active_connections[recipient].send_text(message)
+            print(f"sending an a notification to {recipient}")
+            print(message)
 
     async def broadcast(self, **kwargs):
+        recipient = kwargs.get("recipient")
         message = kwargs.get("message")
-        for user in self.active_connections.keys():
-            await self.active_connections[user].send_text(message)
-            print(f"sending an a notification to {user}")
-            print(message)
+        for user in recipient:
+            if user in self.active_connections.keys():
+                await self.active_connections[user].send_text(message)
+                print(f"sending an a notification to {user}")
+                print(message)
 
 
 class NotificationCenter:

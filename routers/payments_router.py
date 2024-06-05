@@ -107,23 +107,24 @@ async def update_payment_status(payment_id: str,
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
         recipients = {db.query(DbUser).filter(DbUser.id == item.seller_id).first().email
                       for item in payment.items}
-
-        await notify.notify_user(NotificationType.EMAIL,
+        try:
+            await notify.notify_user(NotificationType.EMAIL,
                            recipient=current_user.email, subject="Payment " + payment_status,
                            body=f"The payment has been successful! ")
-        paid_products = {}
-        for seller in recipients:
+            paid_products = {}
+            for seller in recipients:
             # Perform a single query to get all paid products for the current seller
-            products = db.query(DbProduct).join(DbUser, DbUser.id == DbProduct.seller_id).filter(
+                products = db.query(DbProduct).join(DbUser, DbUser.id == DbProduct.seller_id).filter(
                     DbProduct.id.in_(selected_item_ids), DbUser.email == seller
-                ).all()
-            paid_products[seller] = [product.name for product in products]
+                    ).all()
+                paid_products[seller] = [product.name for product in products]
 
-            seller_product = ','.join(paid_products[seller])
-            await notify.notify_user(NotificationType.EMAIL,
+                seller_product = ','.join(paid_products[seller])
+                await notify.notify_user(NotificationType.EMAIL,
                                recipient=seller, subject="Your products are sold!",
                                body=f" You sold {seller_product} ! ")
-
+        finally:
+            pass
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
         await notify.notify_user(NotificationType.EMAIL,
