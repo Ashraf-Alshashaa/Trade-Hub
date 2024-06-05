@@ -6,6 +6,7 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 from schemas.bid import BidStatus
 from schemas.product import ConditionEnum
+from schemas.users import UserRole
 
 
 class DbUser(Base):
@@ -14,6 +15,7 @@ class DbUser(Base):
     username = Column(String, unique=True)
     email = Column(String)
     password = Column(String)
+    role = Column(Enum(UserRole), default=UserRole.USER)
     address = relationship("DbAddress", back_populates="user",  cascade="all, delete-orphan")
     products_selling = relationship("DbProduct", back_populates="seller", cascade="all, delete-orphan",
                                     foreign_keys="[DbProduct.seller_id]")
@@ -48,6 +50,7 @@ class DbProduct(Base):
     price = Column(Float)
     date = Column(DateTime)
     condition = Column(Enum(ConditionEnum))
+    category_id = Column(Integer, ForeignKey('categories.id'))
     seller = relationship("DbUser", back_populates="products_selling", foreign_keys="[DbProduct.seller_id]")
     buyer = relationship("DbUser", back_populates="products_buying", foreign_keys="[DbProduct.buyer_id]")
     bids = relationship("DbBid", back_populates="product", cascade="all, delete-orphan")
@@ -67,6 +70,13 @@ class DbBid(Base):
     user = relationship("DbUser", back_populates="bids")
 
 
+
+class DbCategory(Base):
+    __tablename__ = 'categories'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
+
+ 
 class DbPayment(Base):
     __tablename__ = 'payments'
     id = Column(String, primary_key=True, index=True)
