@@ -21,8 +21,8 @@ def get_user_publicly(user_id: int, db: Session= Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This user does not exist.")
 
 @router.get('/{id}',response_model=UserDisplay)
-def get_user(user_id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
-    if user_id != current_user.id:
+def get_user(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    if id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to see this user")
     id = current_user.id
     return db_user.get_user_by_id(db, id)
