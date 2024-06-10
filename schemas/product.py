@@ -16,6 +16,7 @@ class ProductBase(BaseModel):
     price: float
     date: datetime
     condition: ConditionEnum
+    category_id: int
 
 
 class ProductDisplay(BaseModel):
@@ -26,6 +27,7 @@ class ProductDisplay(BaseModel):
     price: float
     date: datetime
     condition: ConditionEnum
+    category_id: int
 
     class Config:
         from_attributes = True
