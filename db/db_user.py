@@ -50,6 +50,7 @@ def get_user_by_id(db: Session, id: int):
     address_display = AddressPrivateDisplay.from_orm(address) if address else None
 
     user = UserDisplay(
+        id=db_user.id,
         username=db_user.username,
         email=db_user.email,
         address=address_display

@@ -15,6 +15,7 @@ class BidBase(BaseModel):
 
 
 class BidDisplay(BaseModel):
+    id: int
     product_id: int
     date: datetime
     price: float

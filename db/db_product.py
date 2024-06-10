@@ -65,25 +65,30 @@ def delete_product(db: Session, id: int):
     return 'ok'
 
 
-def get_products_by_seller_and_state(db: Session, seller_id: int, sold: bool):
-     # Determine the filter condition based on the sold status
-    if sold:
-        products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id != None).all()
-    else:
-        products = db.query(DbProduct).filter(DbProduct.seller_id == seller_id, DbProduct.buyer_id == None).all()
+def get_products_by_seller_and_state(
+        db: Session,
+        seller_id: Optional[int] = None,
+        sold: Optional[bool] = None
+):
+    query = db.query(DbProduct)
 
-    # Raise an exception if no products are found
+    # Filter by seller_id if provided
+    if seller_id is not None:
+        query = query.filter(DbProduct.seller_id == seller_id)
+
+    # Filter by sold status if provided
+    if sold is not None:
+        if sold:
+            query = query.filter(DbProduct.buyer_id.isnot(None))
+        else:
+            query = query.filter(DbProduct.buyer_id.is_(None))
+
+    products = query.all()
+
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
 
-    return products
-
-
-def get_products_by_seller(db: Session, seller_id: int):
-    item = db.query(DbProduct).filter(DbProduct.seller_id == seller_id).all()
-    if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-    return item
+    return [ProductDisplay.model_validate(product) for product in products]
 
 
 def get_products_bought_by_user(db: Session, user_id: int):

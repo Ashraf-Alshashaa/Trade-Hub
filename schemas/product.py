@@ -16,15 +16,18 @@ class ProductBase(BaseModel):
     price: float
     date: datetime
     condition: ConditionEnum
+    category_id: int
 
 
 class ProductDisplay(BaseModel):
+    id: int
     name: str
     image: str
     description: str
     price: float
     date: datetime
     condition: ConditionEnum
+    category_id: int
 
     class Config:
         from_attributes = True

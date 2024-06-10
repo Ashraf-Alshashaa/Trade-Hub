@@ -5,9 +5,12 @@ import os
 import stripe
 from dotenv import load_dotenv
 import random
-from fastapi import  status
+from fastapi import status
 from db.db_bid import change_bid_status_to_pending
-from db.models import DbPayment
+from db.models import DbPayment, DbProduct, DbUser
+from notifications.notification import NotificationCenter, NotificationType
+
+notify = NotificationCenter()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -89,7 +92,7 @@ def initiate_payment(payment_request: PaymentRequest,
 
 
 @router.put("/{payment_id}", response_model=PaymentResponse, summary="Update Payment Status")
-def update_payment_status(payment_id: str,
+async def update_payment_status(payment_id: str,
                           payment_status: PaymentStatus,
                           db: Session = Depends(get_db),
                           current_user: UserBase = Depends(get_current_user)):
@@ -102,9 +105,31 @@ def update_payment_status(payment_id: str,
         payment.status = PaymentStatus.completed
         selected_item_ids = [item.id for item in payment.items]
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
+        recipients = {db.query(DbUser).filter(DbUser.id == item.seller_id).first().email
+                      for item in payment.items}
+        try:
+            await notify.notify_user(NotificationType.EMAIL,
+                           recipient=current_user.email, subject="Payment " + payment_status,
+                           body=f"The payment has been successful! ")
+            paid_products = {}
+            for seller in recipients:
+            # Perform a single query to get all paid products for the current seller
+                products = db.query(DbProduct).join(DbUser, DbUser.id == DbProduct.seller_id).filter(
+                    DbProduct.id.in_(selected_item_ids), DbUser.email == seller
+                    ).all()
+                paid_products[seller] = [product.name for product in products]
 
+                seller_product = ','.join(paid_products[seller])
+                await notify.notify_user(NotificationType.EMAIL,
+                               recipient=seller, subject="Your products are sold!",
+                               body=f" You sold {seller_product} ! ")
+        finally:
+            pass
     elif payment_status == PaymentStatus.failed:
         payment.status = PaymentStatus.failed
+        await notify.notify_user(NotificationType.EMAIL,
+                           recipient=current_user.email, subject="Payment " + payment_status,
+                           body=f"The payment has been failed! :( ")
 
     db.commit()
 

@@ -3,11 +3,11 @@ from db import db_product, db_bid
 from schemas.product import ProductDisplay, ProductBase
 from sqlalchemy.sql.sqltypes import List
 from typing import Optional
-from db.models import DbProduct
+from db.models import DbProduct, DbUser, DbBid
+from notifications.notification import NotificationCenter, NotificationType
 
 
 router = APIRouter(prefix='/products', tags=['products'])
-
 
 @router.post('', response_model=ProductDisplay)
 def add_product(
@@ -73,13 +73,8 @@ def get_products_filtered(
                                 detail="You're only authorized to list bids of your own")
         return db_product.get_products_user_is_bidding_on(db, bidder_id)
 
-    if seller_id is not None:
-        if sold is not None:
-            products = db_product.get_products_by_seller_and_state(db, seller_id, sold)
-            return products
-        else:
-            products = db_product.get_products_by_seller(db, seller_id)
-            return products
+    if seller_id is not None or sold is not None:
+        return db_product.get_products_by_seller_and_state(db, seller_id, sold)
 
     if user_id is not None:
         if user_id != current_user.id:  # and current_user.role != 'admin':
@@ -107,7 +102,7 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 
 @router.put('/{id}', response_model=ProductDisplay)
-def change_product(
+async def change_product(
         product_id: int,
         bid_id: Optional[int] = Query(None, alias='bid_id that won'),
         db: Session = Depends(get_db),
@@ -140,7 +135,18 @@ def change_product(
         bid = db_bid.get_bid(db, bid_id)
         if bid.product_id != product_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this bid")
-        return db_product.choose_buyer(db, bid_id)
+        bidder = db.query(DbUser).filter(DbUser.id == bid.bidder_id).first()
+        other_bidders = db.query(DbUser).join(DbBid, DbUser.id == DbBid.bidder_id).filter(DbBid.product_id == product_id).all()
+        other_bidders = [bidder.id for bidder in other_bidders]
+        print(other_bidders)
+        await notify.in_app.broadcast(
+                                 recipient=other_bidders, message=f"{product.name} is sold.")
+        try:
+            await notify.notify_user(NotificationType.EMAIL,
+                                     recipient=bidder.email, subject="Congratulations! You won the auction!",
+                                     body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
+        finally:
+            return db_product.choose_buyer(db, bid_id)
 
     if request is not None:
 
