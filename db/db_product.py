@@ -133,9 +133,6 @@ def get_cart(db: Session, user_id: int):
     # Query products using the extracted product IDs
     products = db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
 
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-
     return products
 
 
