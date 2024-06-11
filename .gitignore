@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# Default ignored files
+/shelf/
+/workspace.xml
+./idea
+
 # Distribution / packaging
 .Python
 build/
@@ -120,3 +125,4 @@ cython_debug/
 # FastAPI / Uvicorn specific
 logs/
 *.log
+.idea/vcs.xml
