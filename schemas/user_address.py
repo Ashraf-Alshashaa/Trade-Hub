@@ -18,6 +18,7 @@ class AddressPrivateDisplay(BaseModel):
     country: str
     postcode: str
     house_number: int
+    default: bool
 
     class Config:
         from_attributes = True

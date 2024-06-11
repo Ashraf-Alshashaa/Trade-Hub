@@ -82,5 +82,5 @@ def delete_address(db: Session, id: int, user_id: int):
                                                                              " change it first!")
     db.delete(address)
     db.commit()
-    return 'ok'
+    return 
 
