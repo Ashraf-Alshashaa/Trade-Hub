@@ -41,9 +41,9 @@ def all_my_addresses(user_id: int,
     return db_user_address.my_addresses(db, current_user.id)
 
 
-@router.get('/{id}', response_model=AddressPrivateDisplay)
+@router.get('/{address_id}', response_model=AddressPrivateDisplay)
 def get_address_by_id(user_id: int,
-                      address_id: Optional[int] = None,
+                      address_id: int,
                       db: Session = Depends(get_db),
                       current_user: UserBase = Depends(get_current_user)):
     if current_user.id != user_id:
@@ -57,7 +57,7 @@ def get_address_by_id(user_id: int,
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorised.")
 
 
-@router.put('/{id}', response_model=AddressPrivateDisplay)
+@router.put('/{address_id}', response_model=AddressPrivateDisplay)
 def modify_address(request: AddressBase,
                    user_id : int,
                    address_id: int,
@@ -83,7 +83,7 @@ def modify_address(request: AddressBase,
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorised.")
 
 
-@router.delete('/{id}')
+@router.delete('/{address_id}')
 def delete_address(address_id: int,
                    user_id: int,
                    db: Session = Depends(get_db),
