@@ -122,9 +122,6 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
         DbProduct.buyer_id.is_(None)  # Filter by products without a buyer
     ).all()
 
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-
     return products
 
 
