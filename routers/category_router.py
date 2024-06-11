@@ -48,7 +48,7 @@ def update_category(
     return db_category.update_category(db, id, request)
 
 
-@router.delete('/{id}')
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_category(
         id: int, 
         db: Session = Depends(get_db),
