@@ -1,14 +1,14 @@
 from . import *
-from schemas.payments import PaymentResponse, PaymentRequest, PaymentStatus
+from schemas.payments import PaymentResponse, PaymentRequest, PaymentStatus, PaymentStatusUpdate
 from db.db_product import get_cart
 import os
 import stripe
 from dotenv import load_dotenv
-import random
 from fastapi import status
 from db.db_bid import change_bid_status_to_pending
 from db.models import DbPayment, DbProduct, DbUser
 from notifications.notification import NotificationCenter, NotificationType
+from db.db_payment import update_payment
 
 notify = NotificationCenter()
 
@@ -91,25 +91,22 @@ def initiate_payment(payment_request: PaymentRequest,
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.put("/{payment_id}", response_model=PaymentResponse, summary="Update Payment Status")
-async def update_payment_status(payment_id: str,
-                          payment_status: PaymentStatus,
-                          db: Session = Depends(get_db),
-                          current_user: UserBase = Depends(get_current_user)):
-    payment = db.query(DbPayment).filter(DbPayment.id == payment_id, DbPayment.user_id == current_user.id).first()
+@router.put("/{id}", response_model=PaymentResponse, summary="Update Payment Status")
+async def update_payment_status(id: str,
+                                request: PaymentStatusUpdate,
+                                db: Session = Depends(get_db),
+                                current_user: UserBase = Depends(get_current_user)):
 
-    if not payment:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
+    updated_payment = update_payment(id, db, request)
 
-    if payment_status == PaymentStatus.completed:
-        payment.status = PaymentStatus.completed
-        selected_item_ids = [item.id for item in payment.items]
+    if updated_payment.status == PaymentStatus.completed:
+        selected_item_ids = [item.id for item in updated_payment.items]
         change_bid_status_to_pending(db, current_user.id, selected_item_ids)
         recipients = {db.query(DbUser).filter(DbUser.id == item.seller_id).first().email
-                      for item in payment.items}
+                      for item in updated_payment.items}
         try:
             await notify.notify_user(NotificationType.EMAIL,
-                           recipient=current_user.email, subject="Payment " + payment_status,
+                           recipient=current_user.email, subject="Payment " + updated_payment.status,
                            body=f"The payment has been successful! ")
             paid_products = {}
             for seller in recipients:
@@ -125,18 +122,17 @@ async def update_payment_status(payment_id: str,
                                body=f" You sold {seller_product} ! ")
         finally:
             pass
-    elif payment_status == PaymentStatus.failed:
-        payment.status = PaymentStatus.failed
+    elif updated_payment.status == PaymentStatus.failed:
         await notify.notify_user(NotificationType.EMAIL,
-                           recipient=current_user.email, subject="Payment " + payment_status,
+                           recipient=current_user.email, subject="Payment " + updated_payment.status,
                            body=f"The payment has been failed! :( ")
 
     db.commit()
 
     return PaymentResponse(
-        payment_id=payment.id,
-        status=payment.status,
-        amount=payment.amount,
-        description=payment.description,
-        items=payment.items # This could be optimized to not query again
+        payment_id=updated_payment.id,
+        status=updated_payment.status,
+        amount=updated_payment.amount,
+        description=updated_payment.description,
+        items=updated_payment.items # This could be optimized to not query again
     )
