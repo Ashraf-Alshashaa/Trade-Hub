@@ -85,9 +85,6 @@ def get_products_by_seller_and_state(
 
     products = query.all()
 
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-
     return [ProductDisplay.model_validate(product) for product in products]
 
 
