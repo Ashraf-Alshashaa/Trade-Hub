@@ -92,9 +92,6 @@ def get_products_bought_by_user(db: Session, user_id: int):
     # Fetch products where buyer_id matches user_id
     bought_items = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
 
-    if not bought_items:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
-
     # Filter out products with accepted bids
     valid_products = []
     for product in bought_items:
@@ -106,9 +103,6 @@ def get_products_bought_by_user(db: Session, user_id: int):
 
         if not accepted_bid:
             valid_products.append(product)
-
-    if not valid_products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No valid products found")
 
     return valid_products
 
