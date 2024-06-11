@@ -89,4 +89,4 @@ def delete_user(db: Session, id: int):
                             detail=f'User with id {id} not found')
     db.delete(user)
     db.commit()
-    return 'ok'
+    return

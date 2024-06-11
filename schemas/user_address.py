@@ -25,7 +25,6 @@ class AddressPrivateDisplay(BaseModel):
 
 class AddressPublicDisplay(BaseModel):
     id: int
-    postcode: str
     city: str
 
     class Config:
