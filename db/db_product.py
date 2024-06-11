@@ -3,6 +3,7 @@ from schemas.product import ProductBase, ProductDisplay
 from db.models import DbProduct, DbBid
 from schemas.bid import BidStatus
 from typing import Optional
+from sqlalchemy import or_
 
 
 def add_product(db: Session, request: ProductBase):
@@ -204,8 +205,8 @@ def filter_available_products(
 
     if search_str and len(search_str) > 0:
         available_products_query = available_products_query.filter(
-            DbProduct.name.ilike(f"%{search_str}%") |
-            DbProduct.description.ilike(f"%{search_str}%")
+            or_(DbProduct.name.ilike(f"%{search_str}%"),
+            DbProduct.description.ilike(f"%{search_str}%"))
         )
 
     if category_id:
