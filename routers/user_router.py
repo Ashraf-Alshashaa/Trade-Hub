@@ -37,7 +37,7 @@ def update_user(id: int, request: UserBase, db: Session = Depends(get_db), curre
     return db_user.update_user(db, id, request)
 
 
-@router.delete('/{id}')
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     # Ensure that the current user is deleting their own account
     if current_user.id != id:

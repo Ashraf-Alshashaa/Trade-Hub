@@ -156,7 +156,7 @@ async def change_product(
         return db_product.modify_product(db, product_id, request)
 
 
-@router.delete('/{id}')
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_product(
         id: int,
         db: Session = Depends(get_db),
