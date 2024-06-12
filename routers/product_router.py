@@ -103,7 +103,7 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 @router.put('/{id}', response_model=ProductDisplay)
 async def change_product(
-        product_id: int,
+        id: int,
         request: ProductBase,
         db: Session = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
@@ -116,12 +116,10 @@ async def change_product(
         - **current_user**: Currently authenticated user.
         """
 
-
-
-    product = db_product.get_product(db, product_id)
+    product = db_product.get_product(db, id)
     if product.seller_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
-    return db_product.modify_product(db, product_id, request)
+    return db_product.modify_product(db, id, request)
 
 
 @router.delete('/{id}')
