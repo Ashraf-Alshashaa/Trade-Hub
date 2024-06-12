@@ -20,3 +20,7 @@ class PaymentResponse(BaseModel):
     amount: float
     description: str
     items: List[ProductDisplay]  # List of items being paid for
+
+
+class PaymentStatusUpdate(BaseModel):
+    status: PaymentStatus
