@@ -61,3 +61,24 @@ def change_bid_status_to_pending(db: Session, user_id: int, selected_item_ids: L
         db.add(bid)
 
     db.commit()
+
+
+def choose_buyer(db: Session, bid_id: int):
+
+    bid = db.query(DbBid).filter(DbBid.id == bid_id).first()
+    if not bid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bid not found")
+
+    product = db.query(DbProduct).filter(DbProduct.id == bid.product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Set the buyer of the product and update the product price
+    product.buyer_id = bid.bidder_id
+    bid.status = BidStatus.ACCEPTED
+    product.price = bid.price
+
+    db.commit()
+
+    return bid

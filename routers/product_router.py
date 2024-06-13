@@ -103,57 +103,23 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 @router.put('/{id}', response_model=ProductDisplay)
 async def change_product(
-        product_id: int,
-        bid_id: Optional[int] = Query(None, alias='bid_id that won'),
+        id: int,
+        request: ProductBase,
         db: Session = Depends(get_db),
-        request: Optional[ProductBase] = None,
         current_user: UserBase = Depends(get_current_user)
 ):
     """
         Modify an existing product or choose a buyer for it.
 
         - **product_id**: ID of the product to be modified.
-        - **bid_id that won**: ID of the bid to add the buyer of the product (optional).
-        - **db**: Database session.
-        - **request**: New product details (optional).
+        - **request**: New product details.
         - **current_user**: Currently authenticated user.
         """
 
-    # Retrieve the product from the database
-    product = db_product.get_product(db, product_id)
-
-    if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-
-    seller_id = product.seller_id
-
-    # Check if the current user is the seller
-    if seller_id != current_user.id:
+    product = db_product.get_product(db, id)
+    if product.seller_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
-
-    if bid_id is not None:
-        bid = db_bid.get_bid(db, bid_id)
-        if bid.product_id != product_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this bid")
-        bidder = db.query(DbUser).filter(DbUser.id == bid.bidder_id).first()
-        other_bidders = db.query(DbUser).join(DbBid, DbUser.id == DbBid.bidder_id).filter(DbBid.product_id == product_id).all()
-        other_bidders = [bidder.id for bidder in other_bidders]
-        print(other_bidders)
-        await notify.in_app.broadcast(
-                                 recipient=other_bidders, message=f"{product.name} is sold.")
-        try:
-            await notify.notify_user(NotificationType.EMAIL,
-                                     recipient=bidder.email, subject="Congratulations! You won the auction!",
-                                     body=f"Hi {bidder.username}! \n\n Your bid for {product.name} is chosen by the seller!")
-        finally:
-            return db_product.choose_buyer(db, bid_id)
-
-    if request is not None:
-
-        product = db_product.get_product(db, product_id)
-        if product.seller_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to modify this product")
-        return db_product.modify_product(db, product_id, request)
+    return db_product.modify_product(db, id, request)
 
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
