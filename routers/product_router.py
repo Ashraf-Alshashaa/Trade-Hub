@@ -82,12 +82,7 @@ def get_products_filtered(
                                 detail="You're only authorized to see the cart of your own")
         products = db_product.get_cart(db, user_id)
         return products
-    products = db_product.get_all_available_products(db)
-    if products:
-        return products
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="There are no available products")        
+    return db_product.get_all_available_products(db)      
 
 
 @router.get('/{id}', response_model=ProductDisplay)
