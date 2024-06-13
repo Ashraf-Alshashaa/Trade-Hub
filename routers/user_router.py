@@ -14,9 +14,9 @@ def register_user(request: UserBase, db: Session = Depends(get_db)):
 
 
 @router.get('', response_model= UserPublicDisplay)
-def get_user_publicly(user_id: int, db: Session= Depends(get_db)):
+def get_user_publicly(id: int, db: Session= Depends(get_db)):
     try:
-        return db_user.get_user_by_id(db,user_id)
+        return db_user.get_user_by_id(db,id)
     except:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This user does not exist.")
 
