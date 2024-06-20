@@ -5,7 +5,7 @@ def data():
     return [
     {
         'name': 'SonicWave Pro 500 Headphones',
-        'image': 'sonicwave.png',
+        'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3gKeYV6zvFN1CEW56YqlB3Q8N7C1qeR0LJA&s',
         'description': 'Latest model with A15 Bionic chip',
         'seller_id': 2,
         'buyer_id': None,
@@ -16,7 +16,7 @@ def data():
     },
     {
         'name': 'BassBoost Ultra X2 Headphones',
-        'image': 'bassboost.png',
+        'image': 'https://scene7.samsclub.com/is/image/samsclub/0019464401800_A',
         'description': 'High resolution',
         'seller_id': 1,
         'buyer_id': None,
@@ -27,7 +27,7 @@ def data():
     },
     {
         'name': 'Sony WH-1000XM4 Headphones',
-        'image': 'sony_wh1000xm4.png',
+        'image': 'https://www.sony.nl/image/5d02da5df552836db894cead8a68f5f3?fmt=pjpeg&wid=330&bgcolor=FFFFFF&bgc=FFFFFF',
         'description': 'Industry-leading noise cancellation',
         'seller_id': 4,
         'buyer_id': None,
@@ -38,7 +38,7 @@ def data():
     },
     {
         'name': 'NoiseGuard Active 300',
-        'image': 'dell_xps13.png',
+        'image': 'https://images.crutchfieldonline.com/ImageHandler/trim/750/457/products/2005/143/x143PXC300-f.jpeg',
         'description': 'Good headphones.',
         'seller_id': 3,
         'buyer_id': None,
@@ -49,7 +49,7 @@ def data():
     },
     {
         'name': 'Apple Watch Series 7',
-        'image': 'apple_watch_series7.png',
+        'image': 'https://www.apple.com/newsroom/images/product/watch/standard/Apple_watch-series7_hero_09142021_big.jpg.large.jpg',
         'description': 'Advanced health monitoring features',
         'seller_id': 6,
         'buyer_id': None,
@@ -60,7 +60,7 @@ def data():
     },
     {
         'name': 'Canon EOS R5 Camera',
-        'image': 'canon_eos_r5.png',
+        'image': 'https://www.01net.com/app/uploads/2022/01/MEA-Canon-EOS-R5-C.jpg',
         'description': 'Full-frame mirrorless camera with 45MP sensor',
         'seller_id': 7,
         'buyer_id': None,
@@ -71,7 +71,7 @@ def data():
     },
     {
         'name': 'PlayStation 5',
-        'image': 'ps5.png',
+        'image': 'https://media.direct.playstation.com/is/image/psdglobal/PS5-Slim-Hero-4',
         'description': 'Next-gen gaming console with ultra-high-speed SSD',
         'seller_id': 5,
         'buyer_id': None,
@@ -82,7 +82,7 @@ def data():
     },
     {
         'name': 'Nikon Z6 II',
-        'image': 'nikon_z6_ii.png',
+        'image': 'https://consumentenbond-res.cloudinary.com/w_600/e_improve:30/v1609780965/productvergelijker/DIGCAM/ic20007-0684-10_00',
         'description': 'Mirrorless camera with 24.5MP sensor and 4K video',
         'seller_id': 8,
         'buyer_id': None,
@@ -93,7 +93,7 @@ def data():
     },
     {
         'name': 'Microsoft Surface Pro 7',
-        'image': 'surface_pro7.png',
+        'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSm325B6jydjXXESwEA4QuC0_VcUutNRYN5rQ&s',
         'description': '2-in-1 laptop with Intel i5 processor',
         'seller_id': 9,
         'buyer_id': None,
@@ -104,7 +104,7 @@ def data():
     },
     {
         'name': 'Bose QuietComfort 35 II',
-        'image': 'bose_qc35ii.png',
+        'image': 'https://avstore.in/cdn/shop/products/white_3_5be2685b-3060-4b86-84e3-83214c3e6aa9.png?v=1632151650&width=1200',
         'description': 'Wireless noise-cancelling headphones',
         'seller_id': 10,
         'buyer_id': None,
@@ -115,7 +115,7 @@ def data():
     },
     {
         'name': 'Modern Sofa',
-        'image': 'modern_sofa.png',
+        'image': 'https://d.media.kavehome.com/image/upload/w_1280,c_fill,g_auto,ar_1.5,f_auto,dpr_2/v1709577275/products/S751GR39_1V01.jpg',
         'description': 'This stylish and comfortable modern sofa features a sleek design with clean lines and a minimalist aesthetic. It is upholstered in high-quality fabric and includes plush cushions for ultimate comfort. Perfect for any contemporary living room setting.',
         'seller_id': 2,
         'buyer_id': None,
@@ -127,7 +127,7 @@ def data():
     ,
     {
         'name': 'Leather Jacket',
-        'image': 'leather_jacket.png',
+        'image': 'https://cdn-images.italist.com/image/upload/e_background_removal/t_medium_dpr_2_q_auto_v_2,f_auto/08b69111665ecc52113dcaca981180bb.jpg',
         'description': 'This classic leather jacket is made from premium quality leather and features a stylish and rugged design. It has a comfortable lining, multiple pockets, and durable zippers, making it perfect for both fashion and function.',
         'seller_id': 5,
         'buyer_id': 1,
@@ -139,7 +139,7 @@ def data():
     ,
     {
     'name': 'Tesla Model 3',
-    'image': 'tesla_model3.png',
+    'image': 'https://www.tesla.com/sites/default/files/images/support/Meet-Your-Tesla-Model-3.png',
     'description': 'The Tesla Model 3 is an all-electric sedan with impressive range, quick acceleration, and advanced autopilot features. It offers a minimalist interior with a large touchscreen display and premium sound system.',
     'seller_id': 6,
     'buyer_id': 5,
