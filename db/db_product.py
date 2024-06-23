@@ -87,7 +87,8 @@ def get_products_by_seller_and_state(
     products = query.all()
 
     if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+        return []
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
 
     return [ProductDisplay.model_validate(product) for product in products]
 
@@ -96,8 +97,8 @@ def get_products_bought_by_user(db: Session, user_id: int):
     # Fetch products where buyer_id matches user_id
     bought_items = db.query(DbProduct).filter(DbProduct.buyer_id == user_id).all()
 
-    if not bought_items:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+    # if not bought_items:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
 
     # Filter out products with accepted bids
     valid_products = []
@@ -111,8 +112,8 @@ def get_products_bought_by_user(db: Session, user_id: int):
         if not accepted_bid:
             valid_products.append(product)
 
-    if not valid_products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No valid products found")
+    # if not valid_products:
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No valid products found")
 
     return valid_products
 
@@ -132,8 +133,8 @@ def get_products_user_is_bidding_on(db: Session, user_id: int):
         DbProduct.buyer_id.is_(None)  # Filter by products without a buyer
     ).all()
 
-    if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+    # if not products:
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
 
     return products
 
@@ -147,7 +148,8 @@ def get_cart(db: Session, user_id: int):
     products = db.query(DbProduct).filter(DbProduct.id.in_(product_ids)).all()
 
     if not products:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+        # 
+        return []
 
     return products
 
