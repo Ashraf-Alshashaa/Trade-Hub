@@ -203,3 +203,10 @@ def filter_available_products(
     products = available_products_query.all()
 
     return [ProductDisplay.model_validate(product) for product in products]
+
+def get_price_range(db: Session):
+    available_products = db.query(DbProduct).filter(DbProduct.buyer_id == None).all()
+    min_price = min(product.price for product in available_products)
+    max_price = max(product.price for product in available_products)
+    return {"min_price": min_price, "max_price": max_price}
+
