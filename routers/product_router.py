@@ -89,6 +89,10 @@ def get_products_filtered(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="There are no available products")        
 
+@router.get('/price-range')
+def get_price_range(db: Session = Depends(get_db)):
+    return db_product.get_price_range(db)
+
 
 @router.get('/{id}', response_model=ProductDisplay)
 def get_product(id: int, db: Session = Depends(get_db)):

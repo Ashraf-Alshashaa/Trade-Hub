@@ -52,6 +52,7 @@ def modify_product(db: Session, id: int, request: ProductBase):
                 DbProduct.price: request.price,
                 DbProduct.date: request.date,
                 DbProduct.condition: request.condition,
+                DbProduct.category_id: request.category_id,
                 })
     db.commit()
     return item.first()
@@ -203,3 +204,10 @@ def filter_available_products(
     products = available_products_query.all()
 
     return [ProductDisplay.model_validate(product) for product in products]
+
+def get_price_range(db: Session):
+    available_products = db.query(DbProduct).filter(DbProduct.buyer_id == None).all()
+    min_price = min(product.price for product in available_products)
+    max_price = max(product.price for product in available_products)
+    return {"min_price": min_price, "max_price": max_price}
+
