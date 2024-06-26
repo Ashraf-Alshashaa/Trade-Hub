@@ -52,6 +52,7 @@ def modify_product(db: Session, id: int, request: ProductBase):
                 DbProduct.price: request.price,
                 DbProduct.date: request.date,
                 DbProduct.condition: request.condition,
+                DbProduct.category_id: request.category_id,
                 })
     db.commit()
     return item.first()

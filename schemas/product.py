@@ -28,6 +28,7 @@ class ProductDisplay(BaseModel):
     date: datetime
     condition: ConditionEnum
     category_id: int
+    seller_id: int
 
     class Config:
         from_attributes = True
