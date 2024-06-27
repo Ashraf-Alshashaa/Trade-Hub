@@ -16,6 +16,7 @@ def add_product(db: Session, request: ProductBase):
                     price=request.price,
                     date=request.date,
                     condition=request.condition,
+                    category_id=request.category_id
                     )
     db.add(new_item)
     db.commit()
