@@ -87,6 +87,10 @@ def get_products_filtered(
         products = db_product.get_all_available_products(db)
     return products        
 
+@router.get('/price-range')
+def get_price_range(db: Session = Depends(get_db)):
+    return db_product.get_price_range(db)
+
 
 @router.get('/{id}', response_model=ProductDisplay)
 def get_product(id: int, db: Session = Depends(get_db)):
