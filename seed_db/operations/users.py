@@ -7,6 +7,7 @@ def insert_user(session, user):
     session.add(DbUser(
         username=user['username'],
         email=user['email'],
-        password=Hash.bcrypt(user['password'])
+        password=Hash.bcrypt(user['password']),
+        role=user["role"]
     ))
     session.commit()

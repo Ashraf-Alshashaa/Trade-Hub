@@ -1,19 +1,10 @@
 from . import *
 
 
-EXPECTED_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-
-
 class ConditionEnum(str, Enum):
     NEW = "new"
     USED = "used"
     REFURBISHED = "good as new"
-
-
-class StateEnum(str, Enum):
-    AVAILABLE = "available"
-    SOLD = "sold"
-    PENDING = "pending"
 
 
 class ProductBase(BaseModel):
@@ -25,17 +16,20 @@ class ProductBase(BaseModel):
     price: float
     date: datetime
     condition: ConditionEnum
-    state: StateEnum
+    category_id: int
 
 
 class ProductDisplay(BaseModel):
+    id: int
     name: str
     image: str
     description: str
     price: float
     date: datetime
     condition: ConditionEnum
-    state: StateEnum
+    category_id: int
+    seller_id: int
 
     class Config:
         from_attributes = True
+
