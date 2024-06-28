@@ -65,11 +65,18 @@ def update_user(db: Session, id: int, request: UserBase):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'User with id {id} not found')
     try:
-        user.update({
+        if request.password == '':
+            user.update({
+            DbUser.username: request.username,
+            DbUser.email: request.email,
+        })
+        else:
+            user.update({
             DbUser.username: request.username,
             DbUser.email: request.email,
             DbUser.password: Hash.bcrypt(request.password)
         })
+
         db.commit()
     except IntegrityError:
         db.rollback()

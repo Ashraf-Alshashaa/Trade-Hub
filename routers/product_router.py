@@ -37,7 +37,7 @@ def get_products_filtered(
         sold: Optional[bool] = None,
         buyer_id: Optional[int] = None,
         bidder_id: Optional[int] = None,
-        user_id: Optional[int] = Query(None, alias='cart of the user'),
+        user_id: Optional[int] = None,
         max_price: Optional[int] = None,
         min_price: Optional[int] = None,
         current_user: UserBase = Depends(get_current_user)
@@ -59,35 +59,33 @@ def get_products_filtered(
         - **bidder_id**: Filter products that user id bidding on by bidder ID (optional).
         - **user_id**: Get all products in the cart of the user, where their bid is accepted (optional).
         """
+    products = []
     if search_str or max_price or min_price or category_id:
-        return db_product.filter_available_products(db, search_str, category_id, max_price, min_price)    
-    if buyer_id is not None:
+        products = db_product.filter_available_products(db, search_str, category_id, max_price, min_price)    
+    elif buyer_id is not None:
         if buyer_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You're only authorized to list bought products of your own")
-        return db_product.get_products_bought_by_user(db, buyer_id)
+        products = db_product.get_products_bought_by_user(db, buyer_id)
 
-    if bidder_id is not None:
+    elif bidder_id is not None:
         if bidder_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You're only authorized to list bids of your own")
-        return db_product.get_products_user_is_bidding_on(db, bidder_id)
+        products = db_product.get_products_user_is_bidding_on(db, bidder_id)
 
-    if seller_id is not None or sold is not None:
-        return db_product.get_products_by_seller_and_state(db, seller_id, sold)
+    elif seller_id is not None or sold is not None:
+        products = db_product.get_products_by_seller_and_state(db, seller_id, sold)
 
-    if user_id is not None:
+    elif user_id is not None:
         if user_id != current_user.id:  # and current_user.role != 'admin':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You're only authorized to see the cart of your own")
         products = db_product.get_cart(db, user_id)
         return products
-    products = db_product.get_all_available_products(db)
-    if products:
-        return products
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="There are no available products")        
+        products = db_product.get_all_available_products(db)
+    return products        
 
 @router.get('/price-range')
 def get_price_range(db: Session = Depends(get_db)):
