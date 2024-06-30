@@ -1,4 +1,5 @@
 from . import *
+import json
 
 FROM_TRADEHUB = "tradehub@mail.com"
 
@@ -42,9 +43,19 @@ class InAppNotification:
 
     async def send(self, **kwargs):
         recipient = int(kwargs.get("recipient"))
+        product_id = int(kwargs.get("product_id"))
         message = kwargs.get("message")
+
+        data = {
+            "userId" : recipient,
+            "productId" : product_id,
+            "message" : message,
+        }
+
+        message_json = json.dumps(data)
+
         if recipient in self.active_connections.keys():
-            await self.active_connections[recipient].send_text(message)
+            await self.active_connections[recipient].send_text(message_json)
             print(f"sending an a notification to {recipient}")
             print(message)
 
