@@ -86,3 +86,4 @@ class DbPayment(Base):
     description = Column(String)
     user = relationship('DbUser', back_populates='payments')
     items = relationship("DbProduct", back_populates="payment")
+    date = Column(DateTime)
