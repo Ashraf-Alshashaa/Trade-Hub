@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from db.database import engine
 from db import models
-from routers import user_router, product_router, bid_router, user_address_router, payments_router, category_router, websocket_router
+from routers import user_router, product_router, bid_router, user_address_router, payments_router, category_router, websocket_router, reports_router
 from auth import authentication
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+app.include_router(reports_router.router)
 app.include_router(category_router.router)
 app.include_router(bid_router.router)
 app.include_router(product_router.router)

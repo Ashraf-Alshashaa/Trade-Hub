@@ -9,6 +9,7 @@ from db.db_bid import change_bid_status_to_pending
 from db.models import DbPayment, DbProduct, DbUser
 from notifications.notification import NotificationCenter, NotificationType
 from db.db_payment import update_payment
+from datetime import datetime
 
 notify = NotificationCenter()
 
@@ -66,7 +67,8 @@ def initiate_payment(payment_request: PaymentRequest,
             user_id=current_user.id,
             amount=total_amount,
             status=PaymentStatus.pending,
-            description="Payment for selected items"
+            description="Payment for selected items",
+            date = datetime.now()
         )
         db.add(payment)
         db.commit()
