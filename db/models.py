@@ -58,6 +58,7 @@ class DbProduct(Base):
     payment = relationship("DbPayment", back_populates="items")
 
 
+
 class DbBid(Base):
     __tablename__ = 'bids'
     id = Column(Integer, primary_key=True, index=True)

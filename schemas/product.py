@@ -19,6 +19,7 @@ class ProductBase(BaseModel):
     category_id: int
 
 
+
 class ProductDisplay(BaseModel):
     id: int
     name: str
@@ -29,6 +30,7 @@ class ProductDisplay(BaseModel):
     condition: ConditionEnum
     category_id: int
     seller_id: int
+    seller_city: Optional[str] = None
 
     class Config:
         from_attributes = True
