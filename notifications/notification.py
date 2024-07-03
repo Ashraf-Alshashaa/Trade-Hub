@@ -61,10 +61,19 @@ class InAppNotification:
 
     async def broadcast(self, **kwargs):
         recipient = kwargs.get("recipient")
+        product_id = int(kwargs.get("product_id"))
         message = kwargs.get("message")
+
         for user in recipient:
+            data = {
+            "userId" : user,
+            "productId" : product_id,
+            "message" : message,
+        }
+
+            message_json = json.dumps(data)
             if user in self.active_connections.keys():
-                await self.active_connections[user].send_text(message)
+                await self.active_connections[user].send_text(message_json)
                 print(f"sending an a notification to {user}")
                 print(message)
 
