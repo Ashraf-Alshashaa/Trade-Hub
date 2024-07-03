@@ -58,6 +58,7 @@ class DbProduct(Base):
     payment = relationship("DbPayment", back_populates="items")
 
 
+
 class DbBid(Base):
     __tablename__ = 'bids'
     id = Column(Integer, primary_key=True, index=True)
@@ -86,3 +87,4 @@ class DbPayment(Base):
     description = Column(String)
     user = relationship('DbUser', back_populates='payments')
     items = relationship("DbProduct", back_populates="payment")
+    date = Column(DateTime)

@@ -1,6 +1,6 @@
 from . import *
 from schemas.product import ProductBase, ProductDisplay
-from db.models import DbProduct, DbBid
+from db.models import DbProduct, DbBid, DbAddress
 from schemas.bid import BidStatus
 from typing import Optional
 from sqlalchemy import or_
@@ -32,14 +32,63 @@ def get_all_available_products(db: Session):
         .filter(DbBid.id == None)
         .all()
     )
-    return available_products
+    product_displays = []
+    for product in available_products:
+        seller_city = None
+        if product.seller:
+            default_address = db.query(DbAddress).filter_by(user_id=product.seller.id, default=True).first()
+            if default_address:
+                seller_city = default_address.city
+
+        product_display = ProductDisplay(
+            id=product.id,
+            name=product.name,
+            image=product.image,
+            description=product.description,
+            price=product.price,
+            date=product.date,
+            condition=product.condition,
+            category_id=product.category_id,
+            seller_id=product.seller_id,
+            seller_city=seller_city
+        )
+        product_displays.append(product_display)
+
+    return product_displays
 
 
 def get_product(db: Session, id: int):
     item = db.query(DbProduct).filter(DbProduct.id == id).first()
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-    return item
+        # Populate ProductDisplay with necessary fields
+        # Fetch seller's city from the seller's default address
+    seller_city = None
+    if item.seller:
+        default_address = db.query(DbAddress).filter_by(user_id=item.seller.id, default=True).first()
+        if default_address:
+            seller_city = default_address.city
+
+    sold = None
+    if item.buyer:
+        sold = True
+
+    # Populate ProductDisplay with necessary fields
+    product_display = ProductDisplay(
+        id=item.id,
+        name=item.name,
+        image=item.image,
+        description=item.description,
+        price=item.price,
+        date=item.date,
+        condition=item.condition,
+        category_id=item.category_id,
+        seller_id=item.seller_id,
+        seller_city=seller_city,
+        sold=sold
+
+    )
+    return product_display
 
 
 def modify_product(db: Session, id: int, request: ProductBase):
@@ -91,8 +140,32 @@ def get_products_by_seller_and_state(
     if not products:
         return []
         # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Products not found")
+    product_displays = []
+    for product in products:
+        seller_city = None
+        if product.seller:
+            default_address = db.query(DbAddress).filter_by(user_id=product.seller.id, default=True).first()
+            if default_address:
+                seller_city = default_address.city
 
-    return [ProductDisplay.model_validate(product) for product in products]
+        product_display = ProductDisplay(
+            id=product.id,
+            name=product.name,
+            image=product.image,
+            description=product.description,
+            price=product.price,
+            date=product.date,
+            condition=product.condition,
+            category_id=product.category_id,
+            seller_id=product.seller_id,
+            seller_city=seller_city
+        )
+
+        # Validate and return ProductDisplay instance
+        validated_product_display = ProductDisplay.validate(product_display.dict())
+        product_displays.append(validated_product_display)
+
+    return product_displays
 
 
 def get_products_bought_by_user(db: Session, user_id: int):
@@ -206,7 +279,32 @@ def filter_available_products(
 
     products = available_products_query.all()
 
-    return [ProductDisplay.model_validate(product) for product in products]
+    product_displays = []
+    for product in products:
+        seller_city = None
+        if product.seller:
+            default_address = db.query(DbAddress).filter_by(user_id=product.seller.id, default=True).first()
+            if default_address:
+                seller_city = default_address.city
+
+        product_display = ProductDisplay(
+            id=product.id,
+            name=product.name,
+            image=product.image,
+            description=product.description,
+            price=product.price,
+            date=product.date,
+            condition=product.condition,
+            category_id=product.category_id,
+            seller_id=product.seller_id,
+            seller_city=seller_city
+        )
+
+        # Validate and return ProductDisplay instance
+        validated_product_display = ProductDisplay.validate(product_display.dict())
+        product_displays.append(validated_product_display)
+
+    return product_displays
 
 def get_price_range(db: Session):
     available_products = db.query(DbProduct).filter(DbProduct.buyer_id == None).all()
