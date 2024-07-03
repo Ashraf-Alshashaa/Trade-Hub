@@ -69,6 +69,10 @@ def get_product(db: Session, id: int):
         if default_address:
             seller_city = default_address.city
 
+    sold = None
+    if item.buyer:
+        sold = True
+
     # Populate ProductDisplay with necessary fields
     product_display = ProductDisplay(
         id=item.id,
@@ -80,7 +84,9 @@ def get_product(db: Session, id: int):
         condition=item.condition,
         category_id=item.category_id,
         seller_id=item.seller_id,
-        seller_city=seller_city
+        seller_city=seller_city,
+        sold=sold
+
     )
     return product_display
 
