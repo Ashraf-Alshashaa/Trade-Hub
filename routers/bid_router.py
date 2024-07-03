@@ -38,7 +38,8 @@ async def add_bid(request: BidBase, db: Session = Depends(get_db), current_user:
         print(connections[user.id])
         await notify.notify_user(NotificationType.IN_APP,
                        recipient=user.id,
-                       message=f"There is a new bid on {product} ")
+                       message=f"There is a new bid on {product} ",
+                       product_id= product_id)
     finally:
         return bid
 
