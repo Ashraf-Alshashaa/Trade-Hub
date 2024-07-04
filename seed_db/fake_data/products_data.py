@@ -127,7 +127,7 @@ def data():
         {
             'name': 'Modern Sofa',
             'image': 'https://i0.wp.com/m.media-amazon.com/images/I/41DGQGgFc5L._SL500_.jpg?fit=500%2C500&ssl=1',
-            'description': 'This stylish and comfortable modern sofa features a sleek design with clean lines and a minimalist aesthetic. It is upholstered in high-quality fabric and includes plush cushions for ultimate comfort. Perfect for any contemporary living room setting.',
+            'description': 'This stylish and comfortable modern sofa features a sleek design with clean lines and a minimalist aesthetic.',
             'seller_id': 2,
             'buyer_id': None,
             'price': 900,
