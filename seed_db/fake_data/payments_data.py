@@ -4,7 +4,7 @@ from schemas.payments import PaymentStatus
 def data(): 
     return [
     {
-        "id": "ay99999",
+        "id": "pay99999",
         "user_id": 1,
         "amount": 249.99,
         "status": PaymentStatus.completed,
