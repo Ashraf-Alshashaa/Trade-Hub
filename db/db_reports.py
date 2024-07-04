@@ -60,7 +60,7 @@ def get_sales_report(period: str, db: Session):
             sales_data[period_label] = 0
     
     published_products = db.query(DbProduct).filter(DbProduct.date >= period_start, DbProduct.date < period_end).count()
-    sold_products = db.query(DbProduct).filter(DbProduct.buyer_id.isnot(None), DbProduct.date >= period_start, DbProduct.date < period_end).count()
+    sold_products = db.query(DbPayment).filter( DbPayment.date >= period_start, DbPayment.date < period_end).count()
 
     all_published_products = db.query(DbProduct).count()
     all_sold_products = db.query(DbProduct).filter(DbProduct.payment_id.isnot(None)).count()
@@ -95,8 +95,7 @@ def get_bids_report(period: str, db: Session):
             bids_count[period_label] = 0
 
     published_bids = db.query(DbBid).filter(DbBid.date >= period_start, DbBid.date < period_end).count()
-    accepted_bids = db.query(DbPayment).filter(DbPayment.status == PaymentStatus.completed, DbPayment.date >= period_start, DbPayment.date <= period_end).count() 
-    + db.query(DbBid).filter(DbBid.status == BidStatus.ACCEPTED, DbBid.date >= period_start, DbBid.date < period_end).count()
+    accepted_bids = db.query(DbPayment).filter(DbPayment.status == PaymentStatus.completed, DbPayment.date >= period_start, DbPayment.date < period_end).count() + db.query(DbBid).filter(DbBid.status == BidStatus.ACCEPTED, DbBid.date >= period_start, DbBid.date < period_end).count()
 
     all_published_bids = db.query(DbBid).count()
     all_accepted_bids = db.query(DbPayment).filter(DbPayment.status == PaymentStatus.completed).count() + db.query(DbBid).filter(DbBid.status == BidStatus.ACCEPTED).count()

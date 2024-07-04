@@ -1,1 +1,1 @@
-from db.models import DbUser, DbAddress, DbProduct, DbBid
+from db.models import DbUser, DbAddress, DbProduct, DbBid, DbPayment
