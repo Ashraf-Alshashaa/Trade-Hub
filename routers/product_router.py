@@ -40,7 +40,7 @@ def get_products_filtered(
         user_id: Optional[int] = None,
         max_price: Optional[int] = None,
         min_price: Optional[int] = None,
-        current_user: UserBase = Depends(get_current_user)
+        current_user: UserBase = Depends(optional_get_current_user)
 ):
 
     """

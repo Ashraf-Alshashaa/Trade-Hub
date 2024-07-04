@@ -1,6 +1,7 @@
 from . import *
 from dotenv import dotenv_values
 from db import db_user
+from db.models import DbUser, UserRole
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 config = dotenv_values(".env")
@@ -40,3 +41,38 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
 
     return user
+
+
+def optional_get_current_user(request: Request, db: Session = Depends(get_db)):
+    token: Optional[str] = request.headers.get("Authorization")
+    if token is None or not token.startswith("Bearer "):
+        return DbUser(
+            id=0,
+            username="guest",
+            email="guest@example.com",
+            password="",
+            role=UserRole.USER,
+            address=[],
+            products_selling=[],
+            products_buying=[],
+            bids=[],
+            payments=[]
+        )
+    
+    token = token[len("Bearer "):]
+    
+    try:
+        return get_current_user(token, db)
+    except HTTPException:
+        return DbUser(
+            id=0,
+            username="guest",
+            email="guest@example.com",
+            password="",
+            role=UserRole.USER,
+            address=[],
+            products_selling=[],
+            products_buying=[],
+            bids=[],
+            payments=[]
+        )
