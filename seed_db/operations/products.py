@@ -11,6 +11,7 @@ def insert_pruduct(session, product):
                 price=product['price'],
                 date=product['date'],
                 condition=product['condition'],
-                category_id=product['category_id']
+                category_id=product['category_id'],
+                payment_id=product["payment_id"]
             ))
     session.commit()
